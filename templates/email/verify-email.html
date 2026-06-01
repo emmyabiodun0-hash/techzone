@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verify Email</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#FFF4EC;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+/* Card Container */
+
+.container{
+    width:420px;
+    background:white;
+    border-radius:18px;
+    border:1px solid #FFD2B3;
+    box-shadow:0 8px 25px rgba(255,107,0,0.12);
+    overflow:hidden;
+}
+
+/* Header */
+
+.header{
+    background:linear-gradient(135deg,#FF8A3D,#FF6B00);
+    padding:22px;
+    text-align:center;
+    color:white;
+}
+
+.header h2{
+    font-size:24px;
+    letter-spacing:1px;
+}
+
+/* Main */
+
+main{
+    padding:35px 30px;
+    text-align:center;
+}
+
+main p{
+    font-size:16px;
+    color:#555;
+    margin-bottom:22px;
+    line-height:1.7;
+}
+
+/* OTP Box */
+
+.otp-container{
+    border:2px dashed #FF6B00;
+    border-radius:14px;
+    padding:18px 28px;
+    font-weight:700;
+    font-size:32px;
+    letter-spacing:6px;
+    color:#FF6B00;
+    display:inline-block;
+    background:#FFF8F3;
+}
+
+/* Footer */
+
+.footer{
+    margin-top:28px;
+}
+
+.footer p{
+    font-size:13px;
+    color:#888;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+<h2>Email Verification</h2>
+</div>
+
+<main>
+
+<p>
+Welcome {{username}} to our techzone platform.  
+Use the OTP below to verify your email address.
+</p>
+
+<div class="otp-container">
+{{otp}}
+</div>
+
+<div class="footer">
+<p>This code will expire in a few minutes.</p>
+</div>
+
+</main>
+
+</div>
+
+</body>
+</html>

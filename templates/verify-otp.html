@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+
+body{
+    background:#f4f6f9;
+    font-family:Arial, sans-serif;
+}
+
+form{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+    width:40%;
+    margin-inline:auto;
+    margin-top:100px;
+    padding:35px;
+    background:#ffffff;
+    border-radius:16px;
+    border:2px solid #FF6B00;
+    box-shadow:0 4px 15px rgba(255,107,0,0.15);
+}
+
+h2{
+    text-align:center;
+    color:#FF6B00;
+    margin-bottom:10px;
+}
+
+.form-control{
+    padding:14px;
+    border:2px solid #FF6B00;
+    border-radius:10px;
+    outline:none;
+    font-size:16px;
+    transition:0.3s;
+}
+
+.form-control:focus{
+    box-shadow:0 0 8px rgba(255,107,0,0.4);
+}
+
+input[type="submit"]{
+    padding:14px;
+    background:#FF6B00;
+    color:white;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+input[type="submit"]:hover{
+    background:#e65f00;
+}
+
+.info{
+    text-align:center;
+    color:#666;
+    font-size:14px;
+}
+
+.expire{
+    text-align:center;
+    color:#FF6B00;
+    font-size:14px;
+    font-weight:bold;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<main>
+
+    <form action="" method="post">
+
+        <h2>Verify OTP</h2>
+
+        <p class="info">
+            Enter the verification code sent to your email
+        </p>
+
+        <input 
+            type="text" 
+            name="token" 
+            class="form-control" 
+            placeholder="Enter OTP"
+        >
+
+        <p class="expire">
+            The code will expire in next 10 minutes
+        </p>
+
+        <input type="submit" value="Verify">
+
+    </form>
+
+</main>
+
+{% endblock %}

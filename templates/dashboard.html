@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TechZone — Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
+    :root {
+      --orange:#FF6B00; --orange-dark:#E05500; --orange-light:#FFF0E6;
+      --navy:#1A1A2E; --navy2:#16213E;
+      --green:#00C896; --red:#FF4B4B;
+      --bg:#F8F7F4; --white:#fff;
+      --muted:#7A7A8C; --light:#B0B0C0; --border:#EBEBF0;
+      --shadow:0 4px 24px rgba(26,26,46,.09);
+      --shadow-lg:0 12px 40px rgba(26,26,46,.16);
+      --r-sm:8px; --r-md:14px; --r-lg:20px; --r-xl:28px; --r-full:9999px;
+    }
+    html { scroll-behavior:smooth; }
+    body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--bg); color:var(--navy); overflow-x:hidden; }
+    .page { display:none; min-height:100vh; }
+    .page.active { display:block; }
+
+    /* NAV */
+    nav { position:sticky; top:0; z-index:500; background:rgba(255,255,255,.97); backdrop-filter:blur(18px); border-bottom:1px solid var(--border); height:66px; display:flex; align-items:center; padding:0 5%; gap:1rem; }
+    .logo { font-family:'Clash Display',sans-serif; font-size:1.4rem; font-weight:700; color:var(--navy); cursor:pointer; flex-shrink:0; }
+    .logo span { color:var(--orange); }
+    .nav-cats { display:flex; gap:0.1rem; margin-left:1.5rem; }
+    .nav-cat-btn { background:none; border:none; font-family:inherit; font-size:.82rem; font-weight:500; color:var(--muted); padding:.4rem .7rem; border-radius:var(--r-sm); cursor:pointer; transition:all .2s; white-space:nowrap; }
+    .nav-cat-btn:hover, .nav-cat-btn.active { background:var(--orange-light); color:var(--orange); }
+    .nav-search { flex:1; max-width:380px; margin-left:auto; display:flex; align-items:center; background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-full); padding:.45rem 1rem; gap:.5rem; }
+    .nav-search i { color:var(--light); font-size:.85rem; }
+    .nav-search input { border:none; background:none; font-family:inherit; font-size:.88rem; color:var(--navy); outline:none; width:100%; }
+    .nav-search input::placeholder { color:var(--light); }
+    .nav-right { display:flex; align-items:center; gap:.5rem; margin-left:1rem; }
+    .icon-btn { width:40px; height:40px; border-radius:50%; border:none; background:none; display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1rem; cursor:pointer; transition:all .2s; position:relative; }
+    .icon-btn:hover { background:var(--orange-light); color:var(--orange); }
+    .badge { position:absolute; top:4px; right:4px; width:17px; height:17px; border-radius:50%; background:var(--orange); color:#fff; font-size:.6rem; font-weight:700; display:flex; align-items:center; justify-content:center; }
+
+    /* USER DROPDOWN */
+    .user-menu-wrap { position:relative; }
+    .nav-user { display:flex; align-items:center; gap:.5rem; cursor:pointer; padding:.35rem .75rem; border-radius:var(--r-full); border:1.5px solid var(--border); background:none; font-family:inherit; font-size:.83rem; font-weight:600; color:var(--navy); transition:all .2s; }
+    .nav-user:hover { border-color:var(--orange); color:var(--orange); }
+
+    /* Empty avatar circle */
+    .avatar-circle { width:30px; height:30px; border-radius:50%; background:#e8e8f0; border:2px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; color:#bbb; font-size:.75rem; overflow:hidden; position:relative; }
+    .avatar-circle img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; border-radius:50%; }
+    .avatar-circle.has-photo img { display:block; }
+    .avatar-circle.has-photo i { display:none; }
+
+    .user-name-txt { max-width:90px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .chevron-icon { font-size:.7rem; color:var(--muted); transition:transform .25s; flex-shrink:0; }
+    .user-menu-wrap.open .chevron-icon { transform:rotate(180deg); }
+
+    .user-dropdown { position:absolute; top:calc(100% + 10px); right:0; width:240px; background:var(--white); border:1.5px solid var(--border); border-radius:var(--r-lg); box-shadow:var(--shadow-lg); z-index:600; opacity:0; transform:translateY(-8px) scale(.97); pointer-events:none; transition:all .22s cubic-bezier(.4,0,.2,1); }
+    .user-menu-wrap.open .user-dropdown { opacity:1; transform:translateY(0) scale(1); pointer-events:all; }
+
+    .ud-profile { padding:1rem 1.1rem; display:flex; align-items:center; gap:.75rem; border-bottom:1px solid var(--border); }
+    .ud-avatar-wrap { position:relative; flex-shrink:0; cursor:pointer; }
+    .ud-avatar-circle { width:46px; height:46px; border-radius:50%; background:#e8e8f0; border:2.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.2rem; overflow:hidden; position:relative; transition:opacity .2s; }
+    .ud-avatar-circle img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; border-radius:50%; }
+    .ud-avatar-circle.has-photo { border-color:var(--orange); }
+    .ud-avatar-circle.has-photo img { display:block; }
+    .ud-avatar-circle.has-photo i { display:none; }
+    .ud-avatar-wrap:hover .ud-avatar-circle { opacity:.75; }
+    .ud-avatar-edit { position:absolute; bottom:0; right:0; width:18px; height:18px; border-radius:50%; background:var(--orange); border:2px solid var(--white); display:flex; align-items:center; justify-content:center; pointer-events:none; }
+    .ud-avatar-edit i { color:#fff; font-size:.55rem; }
+    .ud-avatar-input { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; border-radius:50%; }
+    .ud-info { min-width:0; }
+    .ud-name { font-weight:700; font-size:.9rem; color:var(--navy); }
+    .ud-email { font-size:.72rem; color:var(--muted); }
+    .ud-photo-hint { font-size:.66rem; color:var(--orange); margin-top:2px; font-weight:500; }
+
+    .ud-menu { padding:.5rem 0; }
+    .ud-item { display:flex; align-items:center; gap:.65rem; padding:.6rem 1.1rem; font-size:.84rem; font-weight:500; color:var(--navy); cursor:pointer; transition:background .15s; text-decoration:none; border:none; background:none; font-family:inherit; width:100%; text-align:left; }
+    .ud-item i { width:18px; text-align:center; color:var(--muted); font-size:.9rem; flex-shrink:0; }
+    .ud-item:hover { background:var(--bg); color:var(--orange); }
+    .ud-item:hover i { color:var(--orange); }
+    .ud-item.danger { color:var(--red); }
+    .ud-item.danger i { color:var(--red); }
+    .ud-item.danger:hover { background:#fff0f0; }
+    .ud-divider { height:1px; background:var(--border); margin:.35rem 0; }
+
+    /* Photo toast */
+    .photo-toast { position:fixed; bottom:24px; right:24px; background:var(--navy); color:#fff; padding:.7rem 1.2rem; border-radius:var(--r-full); font-size:.82rem; font-weight:500; display:flex; align-items:center; gap:.5rem; z-index:9999; transform:translateY(80px); opacity:0; transition:all .35s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-lg); }
+    .photo-toast.show { transform:translateY(0); opacity:1; }
+    .photo-toast i { color:var(--green); }
+
+    .hamburger { display:none; flex-direction:column; gap:5px; background:none; border:none; cursor:pointer; padding:6px; }
+    .hamburger span { display:block; width:22px; height:2px; background:var(--navy); border-radius:2px; }
+    .mob-nav { display:none; position:fixed; top:66px; left:0; right:0; bottom:0; background:#fff; z-index:499; padding:1.5rem 5%; flex-direction:column; overflow-y:auto; }
+    .mob-nav.open { display:flex; }
+    .mob-nav button { font-size:1rem; font-weight:500; color:var(--navy); padding:.9rem 0; border-bottom:1px solid var(--border); border-top:none; border-left:none; border-right:none; background:none; font-family:inherit; cursor:pointer; text-align:left; }
+    .mob-user-row { display:flex; align-items:center; gap:.85rem; padding:1.1rem 0; border-bottom:1px solid var(--border); margin-bottom:.5rem; }
+    .mob-avatar-circle { width:46px; height:46px; border-radius:50%; background:#e8e8f0; border:2.5px solid var(--border); display:flex; align-items:center; justify-content:center; color:#bbb; font-size:1.2rem; overflow:hidden; position:relative; flex-shrink:0; }
+    .mob-avatar-circle img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:none; border-radius:50%; }
+    .mob-avatar-circle.has-photo { border-color:var(--orange); }
+    .mob-avatar-circle.has-photo img { display:block; }
+    .mob-avatar-circle.has-photo i { display:none; }
+    .mob-user-name { font-weight:700; font-size:.95rem; }
+    .mob-user-email { font-size:.75rem; color:var(--muted); }
+    .mob-logout-link { display:flex; align-items:center; gap:.5rem; color:var(--red) !important; text-decoration:none; font-size:1rem; font-weight:500; padding:.9rem 0; border-bottom:1px solid var(--border); }
+    .mob-logout-link i { font-size:.85rem; }
+
+    .shop-layout { display:grid; grid-template-columns:240px 1fr; gap:2rem; max-width:1280px; margin:0 auto; padding:2rem 5%; }
+    .sidebar { position:sticky; top:82px; height:fit-content; }
+    .sidebar-card { background:var(--white); border-radius:var(--r-lg); border:1.5px solid var(--border); padding:1.5rem; margin-bottom:1.25rem; }
+    .sidebar-title { font-family:'Clash Display',sans-serif; font-size:.95rem; font-weight:700; color:var(--navy); margin-bottom:1.1rem; display:flex; align-items:center; gap:.5rem; }
+    .sidebar-title i { color:var(--orange); }
+    .filter-list { display:flex; flex-direction:column; gap:.6rem; }
+    .filter-item { display:flex; align-items:center; justify-content:space-between; cursor:pointer; }
+    .filter-label { display:flex; align-items:center; gap:.6rem; font-size:.85rem; color:var(--muted); }
+    .filter-label input { accent-color:var(--orange); width:15px; height:15px; cursor:pointer; }
+    .filter-count { font-size:.72rem; color:var(--light); }
+    .price-range { display:flex; flex-direction:column; gap:.75rem; }
+    .price-inputs { display:flex; gap:.5rem; }
+    .price-inp { flex:1; padding:.5rem .65rem; border:1.5px solid var(--border); border-radius:var(--r-sm); font-family:inherit; font-size:.82rem; color:var(--navy); outline:none; }
+    .price-inp:focus { border-color:var(--orange); }
+    .apply-price { width:100%; padding:.55rem; background:var(--orange); color:#fff; border:none; border-radius:var(--r-sm); font-family:inherit; font-size:.83rem; font-weight:600; cursor:pointer; }
+    .apply-price:hover { background:var(--orange-dark); }
+    .rating-list { display:flex; flex-direction:column; gap:.5rem; }
+    .rating-item { display:flex; align-items:center; gap:.5rem; cursor:pointer; font-size:.83rem; color:var(--muted); padding:.35rem 0; }
+    .rating-item:hover { color:var(--navy); }
+    .rating-item .stars-o { color:#FFB800; }
+    .products-topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:.75rem; }
+    .products-topbar h2 { font-family:'Clash Display',sans-serif; font-size:1.3rem; font-weight:700; }
+    .products-count { font-size:.83rem; color:var(--muted); }
+    .sort-select { padding:.45rem .9rem; border:1.5px solid var(--border); border-radius:var(--r-sm); font-family:inherit; font-size:.83rem; color:var(--navy); background:var(--white); cursor:pointer; outline:none; }
+    .sort-select:focus { border-color:var(--orange); }
+    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:1.25rem; }
+    .prod-card { background:var(--white); border-radius:var(--r-lg); border:1.5px solid var(--border); overflow:hidden; cursor:pointer; transition:all .25s; }
+    .prod-card:hover { border-color:var(--orange); transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+    .prod-img-wrap { position:relative; background:#F3F3F6; overflow:hidden; }
+    .prod-img { width:100%; height:180px; object-fit:cover; display:block; transition:transform .4s; }
+    .prod-card:hover .prod-img { transform:scale(1.05); }
+    .prod-badge { position:absolute; top:10px; left:10px; padding:3px 9px; border-radius:6px; font-size:.68rem; font-weight:700; }
+    .b-sale { background:var(--orange); color:#fff; }
+    .b-new { background:var(--green); color:#fff; }
+    .b-hot { background:var(--navy); color:#fff; }
+    .prod-wish { position:absolute; top:10px; right:10px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.9); border:none; cursor:pointer; font-size:.9rem; display:flex; align-items:center; justify-content:center; color:var(--muted); transition:all .2s; }
+    .prod-wish:hover, .prod-wish.on { color:var(--red); }
+    .prod-body { padding:.9rem 1rem 1.1rem; }
+    .prod-cat { font-size:.7rem; font-weight:700; color:var(--orange); text-transform:uppercase; letter-spacing:.5px; margin-bottom:3px; }
+    .prod-name { font-weight:600; font-size:.88rem; color:var(--navy); margin-bottom:5px; line-height:1.4; }
+    .prod-rating { display:flex; align-items:center; gap:5px; margin-bottom:8px; }
+    .stars-s { color:#FFB800; font-size:.75rem; }
+    .rating-txt { font-size:.72rem; color:var(--muted); }
+    .prod-foot { display:flex; align-items:center; justify-content:space-between; gap:6px; }
+    .prod-price { font-family:'Clash Display',sans-serif; font-size:1rem; font-weight:700; color:var(--navy); }
+    .prod-old { font-size:.75rem; color:var(--light); text-decoration:line-through; }
+    .add-btn { width:34px; height:34px; background:var(--orange); border:none; color:#fff; border-radius:9px; cursor:pointer; font-size:.9rem; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+    .add-btn:hover { background:var(--orange-dark); transform:scale(1.08); }
+    .cart-overlay { position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:800; opacity:0; pointer-events:none; transition:opacity .3s; }
+    .cart-overlay.open { opacity:1; pointer-events:all; }
+    .cart-drawer { position:fixed; top:0; right:0; bottom:0; width:420px; max-width:100vw; background:var(--white); z-index:801; display:flex; flex-direction:column; transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); box-shadow:-8px 0 40px rgba(0,0,0,.15); }
+    .cart-drawer.open { transform:translateX(0); }
+    .cart-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+    .cart-head h3 { font-family:'Clash Display',sans-serif; font-size:1.1rem; font-weight:700; display:flex; align-items:center; gap:.5rem; }
+    .cart-head h3 i { color:var(--orange); }
+    .close-btn { width:36px; height:36px; border-radius:50%; border:1.5px solid var(--border); background:none; cursor:pointer; font-size:1rem; color:var(--muted); display:flex; align-items:center; justify-content:center; transition:all .2s; }
+    .close-btn:hover { background:var(--orange-light); color:var(--orange); border-color:var(--orange); }
+    .cart-items { flex:1; overflow-y:auto; padding:1.25rem 1.5rem; display:flex; flex-direction:column; gap:.85rem; }
+    .cart-empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; color:var(--muted); text-align:center; padding:3rem 2rem; }
+    .cart-empty i { font-size:3rem; color:var(--light); }
+    .cart-item { display:flex; gap:.85rem; align-items:flex-start; }
+    .ci-img { width:64px; height:64px; border-radius:10px; object-fit:cover; flex-shrink:0; border:1.5px solid var(--border); }
+    .ci-info { flex:1; min-width:0; }
+    .ci-name { font-size:.85rem; font-weight:600; color:var(--navy); margin-bottom:2px; line-height:1.35; }
+    .ci-cat { font-size:.72rem; color:var(--muted); margin-bottom:.5rem; }
+    .ci-foot { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.4rem; }
+    .ci-price { font-family:'Clash Display',sans-serif; font-size:.95rem; font-weight:700; color:var(--orange); }
+    .ci-qty { display:flex; align-items:center; gap:.35rem; }
+    .qty-btn { width:26px; height:26px; border-radius:7px; border:1.5px solid var(--border); background:none; cursor:pointer; font-size:.8rem; display:flex; align-items:center; justify-content:center; color:var(--navy); transition:all .2s; }
+    .qty-btn:hover { border-color:var(--orange); color:var(--orange); }
+    .qty-num { font-weight:600; font-size:.85rem; min-width:18px; text-align:center; }
+    .ci-del { background:none; border:none; color:var(--light); cursor:pointer; font-size:.85rem; transition:color .2s; padding:4px; }
+    .ci-del:hover { color:var(--red); }
+    .cart-foot { padding:1.25rem 1.5rem; border-top:1px solid var(--border); flex-shrink:0; }
+    .cart-summary { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.25rem; }
+    .cart-row { display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); }
+    .cart-row.total { font-weight:700; color:var(--navy); font-size:1rem; border-top:1px solid var(--border); padding-top:.5rem; margin-top:.25rem; }
+    .btn-checkout { width:100%; padding:.9rem; background:var(--orange); color:#fff; border:none; border-radius:var(--r-md); font-family:inherit; font-size:.95rem; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; box-shadow:0 4px 16px rgba(255,107,0,.35); }
+    .btn-checkout:hover { background:var(--orange-dark); }
+    .btn-continue { width:100%; padding:.7rem; background:none; color:var(--muted); border:1.5px solid var(--border); border-radius:var(--r-md); font-family:inherit; font-size:.85rem; font-weight:600; cursor:pointer; margin-top:.65rem; transition:all .2s; }
+    .btn-continue:hover { border-color:var(--navy); color:var(--navy); }
+    .mob-filter-bar { display:none; padding:.75rem 4%; gap:.5rem; overflow-x:auto; background:var(--white); border-bottom:1px solid var(--border); scrollbar-width:none; }
+    .mob-filter-bar::-webkit-scrollbar { display:none; }
+    .mob-filter-chip { flex-shrink:0; padding:.45rem .9rem; border-radius:var(--r-full); border:1.5px solid var(--border); background:none; font-family:inherit; font-size:.8rem; font-weight:500; color:var(--muted); cursor:pointer; transition:all .2s; white-space:nowrap; display:inline-flex; align-items:center; gap:.4rem; }
+    .mob-filter-chip i { font-size:.75rem; }
+    .mob-filter-chip.active { background:var(--orange); color:#fff; border-color:var(--orange); }
+    .page-header { background:var(--white); border-bottom:1px solid var(--border); padding:1.5rem 5%; }
+    .page-header-inner { max-width:1280px; margin:0 auto; }
+    .page-header h1 { font-family:'Clash Display',sans-serif; font-size:1.5rem; font-weight:700; margin-bottom:.25rem; }
+    .breadcrumb { display:flex; align-items:center; gap:.4rem; font-size:.8rem; color:var(--muted); }
+    .breadcrumb span { color:var(--orange); cursor:pointer; font-weight:500; }
+    .checkout-wrap { max-width:1100px; margin:0 auto; padding:2.5rem 5%; display:grid; grid-template-columns:1fr 380px; gap:2rem; align-items:start; }
+    .checkout-steps { display:flex; align-items:center; margin-bottom:2rem; overflow-x:auto; scrollbar-width:none; }
+    .checkout-steps::-webkit-scrollbar { display:none; }
+    .step-item { display:flex; align-items:center; gap:.5rem; flex-shrink:0; }
+    .step-circle { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.8rem; font-weight:700; flex-shrink:0; transition:all .3s; }
+    .step-circle.done { background:var(--green); color:#fff; }
+    .step-circle.current { background:var(--orange); color:#fff; box-shadow:0 0 0 4px rgba(255,107,0,.2); }
+    .step-circle.pending { background:var(--border); color:var(--muted); }
+    .step-label { font-size:.8rem; font-weight:600; color:var(--muted); white-space:nowrap; }
+    .step-label.current { color:var(--orange); }
+    .step-label.done { color:var(--green); }
+    .step-line { flex:1; height:2px; background:var(--border); margin:0 .5rem; min-width:16px; }
+    .step-line.done { background:var(--green); }
+    .checkout-section { background:var(--white); border-radius:var(--r-lg); border:1.5px solid var(--border); padding:1.75rem; margin-bottom:1.5rem; }
+    .co-title { font-family:'Clash Display',sans-serif; font-size:1.05rem; font-weight:700; color:var(--navy); margin-bottom:1.25rem; display:flex; align-items:center; gap:.5rem; }
+    .co-title i { color:var(--orange); }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+    .form-group { display:flex; flex-direction:column; gap:.4rem; }
+    .form-group.full { grid-column:1/-1; }
+    label { font-size:.8rem; font-weight:600; color:var(--navy); }
+    .form-input, .form-select, .form-textarea { padding:.65rem .9rem; border:1.5px solid var(--border); border-radius:var(--r-sm); font-family:inherit; font-size:.88rem; color:var(--navy); outline:none; background:var(--bg); transition:border-color .2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--orange); background:var(--white); }
+    .form-textarea { resize:vertical; min-height:80px; }
+    .form-input.err { border-color:var(--red); }
+    .pay-opts-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+    .pay-opt { border:2px solid var(--border); border-radius:var(--r-md); padding:1rem; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:.75rem; }
+    .pay-opt:hover { border-color:var(--orange); }
+    .pay-opt.selected { border-color:var(--orange); background:var(--orange-light); }
+    .pay-opt i { font-size:1.2rem; color:var(--orange); flex-shrink:0; }
+    .pay-opt-info { font-size:.82rem; font-weight:600; color:var(--navy); }
+    .pay-opt-sub { font-size:.72rem; color:var(--muted); }
+    .payment-panel { display:none; margin-top:1.25rem; }
+    .payment-panel.show { display:block; }
+    .pay-stage { display:none; }
+    .pay-stage.show { display:block; }
+    .acct-card { background:linear-gradient(135deg,#1A1A2E 0%,#16213E 100%); border-radius:var(--r-lg); padding:1.5rem; color:#fff; margin-bottom:1rem; position:relative; overflow:hidden; }
+    .acct-card::before { content:''; position:absolute; top:-30px; right:-30px; width:120px; height:120px; border-radius:50%; background:rgba(255,107,0,.15); pointer-events:none; }
+    .acct-bank-label { font-size:.75rem; color:rgba(255,255,255,.55); text-transform:uppercase; letter-spacing:.8px; margin-bottom:.4rem; display:flex; align-items:center; gap:.4rem; }
+    .acct-name-label { font-family:'Clash Display',sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:1.1rem; }
+    .acct-num-row { display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,.08); border-radius:10px; padding:.75rem 1rem; margin-bottom:.85rem; gap:.5rem; }
+    .acct-num-val { font-family:'Clash Display',sans-serif; font-size:1.5rem; font-weight:700; letter-spacing:2px; }
+    .copy-acct-btn { background:var(--orange); border:none; color:#fff; padding:.4rem .85rem; border-radius:var(--r-full); font-family:inherit; font-size:.75rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:.3rem; flex-shrink:0; }
+    .copy-acct-btn:hover { background:var(--orange-dark); }
+    .acct-meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+    .acct-meta-box { background:rgba(255,255,255,.07); border-radius:8px; padding:.5rem .75rem; }
+    .acct-meta-lbl { font-size:.68rem; color:rgba(255,255,255,.5); margin-bottom:2px; }
+    .acct-meta-val { font-size:.88rem; font-weight:700; }
+    .acct-amount-val { color:var(--orange); font-family:'Clash Display',sans-serif; }
+    .how-to-box { background:var(--orange-light); border-radius:var(--r-md); padding:1rem 1.25rem; margin-bottom:1rem; }
+    .how-to-title { font-size:.82rem; font-weight:700; color:var(--orange); margin-bottom:.6rem; display:flex; align-items:center; gap:.4rem; }
+    .how-to-item { display:flex; align-items:flex-start; gap:.55rem; font-size:.8rem; color:var(--navy); margin-bottom:.4rem; line-height:1.5; }
+    .how-to-item:last-child { margin-bottom:0; }
+    .how-num { width:18px; height:18px; border-radius:50%; background:var(--orange); color:#fff; font-size:.63rem; font-weight:700; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:1px; }
+    .upload-area { border:2px dashed var(--border); border-radius:var(--r-md); padding:1.5rem; text-align:center; cursor:pointer; transition:all .2s; position:relative; }
+    .upload-area:hover { border-color:var(--orange); background:var(--orange-light); }
+    .upload-area i { font-size:2rem; color:var(--light); margin-bottom:.5rem; display:block; }
+    .upload-area p { font-size:.82rem; color:var(--muted); }
+    .upload-area input[type=file] { position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+    .proof-preview { display:none; align-items:center; gap:.75rem; background:var(--bg); border-radius:var(--r-sm); padding:.75rem 1rem; margin-top:.75rem; }
+    .proof-preview.show { display:flex; }
+    .proof-preview i { color:var(--green); font-size:1.2rem; }
+    .proof-preview span { font-size:.82rem; color:var(--navy); font-weight:500; flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .proof-preview button { background:none; border:none; color:var(--red); cursor:pointer; flex-shrink:0; }
+    .btn-confirm-pay { width:100%; padding:.9rem; background:var(--green); color:#fff; border:none; border-radius:var(--r-md); font-family:inherit; font-size:.92rem; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; margin-top:1rem; box-shadow:0 4px 16px rgba(0,200,150,.3); }
+    .btn-confirm-pay:hover { background:#00b085; transform:translateY(-1px); }
+    .confirmed-badge { background:rgba(0,200,150,.08); border:1.5px solid var(--green); border-radius:var(--r-md); padding:1.25rem; margin-top:1rem; display:flex; align-items:flex-start; gap:.85rem; }
+    .confirmed-badge i { color:var(--green); font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    .confirmed-badge h5 { font-weight:700; color:var(--navy); margin-bottom:.3rem; }
+    .confirmed-badge p { font-size:.82rem; color:var(--muted); line-height:1.6; }
+    .cod-box { background:var(--bg); border-radius:var(--r-md); border:1.5px solid var(--border); padding:1.25rem; }
+    .cod-box h4 { font-size:.9rem; font-weight:700; margin-bottom:.75rem; display:flex; align-items:center; gap:.5rem; }
+    .cod-box h4 i { color:var(--orange); }
+    .cod-amt { font-family:'Clash Display',sans-serif; font-size:1.5rem; font-weight:700; color:var(--orange); margin:.6rem 0 .4rem; }
+    .cod-note { font-size:.8rem; color:var(--muted); line-height:1.65; }
+    .card-form { display:flex; flex-direction:column; gap:.85rem; }
+    .ussd-list { display:flex; flex-direction:column; gap:.6rem; }
+    .ussd-row { background:var(--bg); border:1.5px solid var(--border); border-radius:var(--r-sm); padding:.85rem 1rem; display:flex; align-items:center; justify-content:space-between; cursor:pointer; transition:all .2s; }
+    .ussd-row:hover { border-color:var(--orange); background:var(--orange-light); }
+    .ussd-code { font-family:'Clash Display',sans-serif; font-size:1rem; font-weight:700; color:var(--orange); }
+    .ussd-bank { font-size:.78rem; color:var(--muted); }
+    .order-summary { background:var(--white); border-radius:var(--r-lg); border:1.5px solid var(--border); padding:1.5rem; position:sticky; top:82px; }
+    .os-title { font-family:'Clash Display',sans-serif; font-size:1rem; font-weight:700; margin-bottom:1.1rem; }
+    .os-items { display:flex; flex-direction:column; gap:.85rem; margin-bottom:1.25rem; }
+    .os-item { display:flex; gap:.75rem; align-items:center; }
+    .os-img { width:52px; height:52px; border-radius:9px; object-fit:cover; border:1.5px solid var(--border); flex-shrink:0; }
+    .os-name { font-size:.82rem; font-weight:600; line-height:1.35; }
+    .os-meta { font-size:.73rem; color:var(--muted); margin-top:2px; }
+    .os-price { font-size:.88rem; font-weight:700; margin-left:auto; white-space:nowrap; }
+    .os-divider { border:none; border-top:1px solid var(--border); margin:.75rem 0; }
+    .os-row { display:flex; justify-content:space-between; font-size:.85rem; color:var(--muted); margin-bottom:.45rem; }
+    .os-total { display:flex; justify-content:space-between; font-size:1rem; font-weight:700; margin-top:.5rem; padding-top:.65rem; border-top:2px solid var(--border); }
+    .os-total .os-amt { color:var(--orange); font-family:'Clash Display',sans-serif; font-size:1.1rem; }
+    .btn-place { width:100%; padding:1rem; background:var(--orange); color:#fff; border:none; border-radius:var(--r-md); font-family:inherit; font-size:.95rem; font-weight:700; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; box-shadow:0 4px 16px rgba(255,107,0,.35); margin-top:.5rem; }
+    .btn-place:hover { background:var(--orange-dark); transform:translateY(-1px); }
+    .btn-place:disabled { background:var(--light); box-shadow:none; cursor:not-allowed; transform:none; }
+    .btn-back { width:100%; padding:.8rem; background:none; color:var(--muted); border:1.5px solid var(--border); border-radius:var(--r-md); font-family:inherit; font-size:.88rem; font-weight:600; cursor:pointer; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:.5rem; }
+    .btn-back:hover { border-color:var(--navy); color:var(--navy); }
+    .step-btns { display:flex; gap:.85rem; }
+    .step-btns .btn-back { flex:1; }
+    .step-btns .btn-place { flex:2; margin-top:0; }
+    .success-wrap { max-width:580px; margin:0 auto; padding:4rem 5%; text-align:center; }
+    .success-icon { width:90px; height:90px; border-radius:50%; background:rgba(0,200,150,.12); border:3px solid var(--green); display:flex; align-items:center; justify-content:center; margin:0 auto 1.75rem; font-size:2.2rem; color:var(--green); animation:popIn .5s ease; }
+    @keyframes popIn { 0%{transform:scale(0);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    .success-title { font-family:'Clash Display',sans-serif; font-size:2rem; font-weight:700; margin-bottom:.75rem; }
+    .success-sub { font-size:.95rem; color:var(--muted); line-height:1.75; margin-bottom:2rem; }
+    .success-order { background:var(--white); border-radius:var(--r-lg); border:1.5px solid var(--border); padding:1.5rem; margin-bottom:2rem; text-align:left; }
+    .so-row { display:flex; justify-content:space-between; font-size:.88rem; padding:.5rem 0; border-bottom:1px solid var(--border); gap:.75rem; }
+    .so-row:last-child { border-bottom:none; }
+    .so-label { color:var(--muted); flex-shrink:0; }
+    .so-val { font-weight:600; text-align:right; word-break:break-all; }
+    .btn-go-home { display:inline-flex; align-items:center; gap:.5rem; padding:.9rem 2rem; background:var(--orange); color:#fff; border:none; border-radius:var(--r-full); font-family:inherit; font-size:.95rem; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(255,107,0,.3); }
+    .btn-go-home:hover { background:var(--orange-dark); transform:translateY(-2px); }
+    .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--navy); color:#fff; padding:.85rem 1.5rem; border-radius:var(--r-full); font-size:.85rem; font-weight:500; display:flex; align-items:center; gap:.6rem; z-index:9999; transition:transform .35s cubic-bezier(.4,0,.2,1); box-shadow:var(--shadow-lg); white-space:nowrap; max-width:90vw; }
+    .toast.show { transform:translateX(-50%) translateY(0); }
+    .toast i { color:var(--green); }
+
+    @media(max-width:1100px){.shop-layout{grid-template-columns:200px 1fr}.checkout-wrap{grid-template-columns:1fr;padding:1.5rem 4%}.order-summary{position:static}}
+    @media(max-width:860px){.nav-cats{display:none}.shop-layout{grid-template-columns:1fr;padding:1.25rem 4%}.sidebar{display:none}.mob-filter-bar{display:flex}.nav-search{max-width:220px}.hamburger{display:flex}.user-name-txt{display:none}.chevron-icon{display:none}.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:1}.pay-opts-grid{grid-template-columns:1fr 1fr}.acct-meta-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){nav{padding:0 4%;gap:.4rem;height:60px}.logo{font-size:1.15rem}.nav-search{display:none}.mob-nav{top:60px}.checkout-wrap{padding:1rem 3%;gap:1rem}.checkout-section{padding:1.1rem 1rem}.products-grid{grid-template-columns:repeat(2,1fr);gap:.75rem}.prod-img{height:148px}.prod-body{padding:.7rem .8rem .9rem}.prod-name{font-size:.82rem}.cart-drawer{width:100vw}.success-wrap{padding:2.5rem 4%}.success-title{font-size:1.6rem}.acct-num-val{font-size:1.2rem;letter-spacing:1px}.step-label{display:none}.step-label.current{display:block}.pay-opts-grid{grid-template-columns:1fr}.user-dropdown{width:200px}}
+    @media(max-width:400px){.products-grid{gap:.55rem}.prod-img{height:128px}.prod-price{font-size:.88rem}.add-btn{width:30px;height:30px;font-size:.78rem;border-radius:7px}.acct-meta-grid{grid-template-columns:1fr}.step-btns{flex-direction:column-reverse}.step-btns .btn-back,.step-btns .btn-place{flex:auto}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="goTo('shop')">Tech<span>Zone</span></div>
+  <div class="nav-cats">
+    <button class="nav-cat-btn active" onclick="filterCat('all',this)">All</button>
+    <button class="nav-cat-btn" onclick="filterCat('phones',this)">Phones</button>
+    <button class="nav-cat-btn" onclick="filterCat('laptops',this)">Laptops</button>
+    <button class="nav-cat-btn" onclick="filterCat('audio',this)">Audio</button>
+    <button class="nav-cat-btn" onclick="filterCat('gaming',this)">Gaming</button>
+    <button class="nav-cat-btn" onclick="filterCat('watches',this)">Watches</button>
+    <button class="nav-cat-btn" onclick="filterCat('tablets',this)">Tablets</button>
+    <button class="nav-cat-btn" onclick="filterCat('cameras',this)">Cameras</button>
+    <button class="nav-cat-btn" onclick="filterCat('accessories',this)">Accessories</button>
+  </div>
+  <div class="nav-search">
+    <i class="fa fa-search"></i>
+    <input type="text" id="searchInput" placeholder="Search products..." oninput="searchProducts()"/>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" onclick="openCart()">
+      <i class="fa fa-shopping-cart"></i>
+      <span class="badge" id="cart-badge">0</span>
+    </button>
+
+    <!-- User menu -->
+    <div class="user-menu-wrap" id="userMenuWrap">
+      <button class="nav-user" onclick="toggleUserMenu(event)">
+        <!-- Empty avatar circle with person icon -->
+        <div class="avatar-circle" id="navAvatar">
+          <i class="fa fa-user"></i>
+          <img id="navAvatarImg" src="" alt=""/>
+        </div>
+        <span class="user-name-txt">My Account</span>
+        <i class="fa fa-chevron-down chevron-icon"></i>
+      </button>
+      <div class="user-dropdown" id="userDropdown">
+        <!-- Profile section with photo upload -->
+        <div class="ud-profile">
+          <div class="ud-avatar-wrap" title="Click to add photo">
+            <div class="ud-avatar-circle" id="dropdownAvatar">
+              <i class="fa fa-user"></i>
+              <img id="dropdownAvatarImg" src="" alt=""/>
+            </div>
+            <div class="ud-avatar-edit"><i class="fa fa-camera"></i></div>
+            <input type="file" class="ud-avatar-input" id="avatarInput" accept="image/*" onchange="handleAvatarChange(this)"/>
+          </div>
+          <div class="ud-info">
+            <div class="ud-name">My Account</div>
+            <div class="ud-email">{{current_user.email}} </div>
+            <div class="ud-photo-hint"><i class="fa fa-camera" style="font-size:.6rem"></i> Tap to add photo</div>
+          </div>
+        </div>
+        <div class="ud-menu">
+          <button class="ud-item"><i class="fa fa-user"></i> {{current_user.username}} </button>
+          <button class="ud-item"><i class="fa fa-box"></i> My Orders</button>
+          <button class="ud-item"><i class="fa fa-heart"></i> Wishlist</button>
+          <button class="ud-item"><i class="fa fa-map-marker-alt"></i> Saved Addresses</button>
+          <div class="ud-divider"></div>
+          <button class="ud-item"><i class="fa fa-cog"></i> Settings</button>
+          <div class="ud-divider"></div>
+          <a href="{{url_for('logout')}}" class="ud-item danger"><i class="fa fa-sign-out-alt"></i> Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <button class="hamburger" onclick="toggleMobNav()"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- Mobile Nav -->
+<div class="mob-nav" id="mobNav">
+  <div class="mob-user-row">
+    <div class="mob-avatar-circle" id="mobAvatar">
+      <i class="fa fa-user"></i>
+      <img id="mobAvatarImg" src="" alt=""/>
+    </div>
+    <div>
+      <div class="mob-user-name">My Account</div>
+      <div class="mob-user-email">{{current_email}} </div>
+    </div>
+  </div>
+  <button onclick="filterCat('all',null);toggleMobNav()">All Products</button>
+  <button onclick="filterCat('phones',null);toggleMobNav()">Phones</button>
+  <button onclick="filterCat('laptops',null);toggleMobNav()">Laptops</button>
+  <button onclick="filterCat('audio',null);toggleMobNav()">Audio</button>
+  <button onclick="filterCat('gaming',null);toggleMobNav()">Gaming</button>
+  <button onclick="filterCat('tablets',null);toggleMobNav()">Tablets</button>
+  <button onclick="filterCat('cameras',null);toggleMobNav()">Cameras</button>
+  <button onclick="filterCat('accessories',null);toggleMobNav()">Accessories</button>
+  <button onclick="openCart();toggleMobNav()">Cart (<span id="mob-cart-count">0</span>)</button>
+  <a href="{{url_for('logout')}}" class="mob-logout-link"><i class="fa fa-sign-out-alt"></i> Logout</a>
+</div>
+
+<!-- Photo toast -->
+<div class="photo-toast" id="photoToast"><i class="fa fa-check-circle"></i><span id="photoToastMsg">Photo updated!</span></div>
+
+<!-- SHOP PAGE -->
+<div class="page active" id="page-shop">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Shop Electronics</h1>
+      <div class="breadcrumb"><span onclick="goTo('shop')">Home</span> / <span id="breadcrumb-cat">All Products</span></div>
+    </div>
+  </div>
+
+  <div class="mob-filter-bar">
+    <button class="mob-filter-chip active" onclick="filterCatMob('all',this)"><i class="fa fa-th-large"></i> All</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('phones',this)"><i class="fa fa-mobile-alt"></i> Phones</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('laptops',this)"><i class="fa fa-laptop"></i> Laptops</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('audio',this)"><i class="fa fa-headphones"></i> Audio</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('gaming',this)"><i class="fa fa-gamepad"></i> Gaming</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('tablets',this)"><i class="fa fa-tablet-alt"></i> Tablets</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('cameras',this)"><i class="fa fa-camera"></i> Cameras</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('watches',this)"><i class="fa fa-clock"></i> Watches</button>
+    <button class="mob-filter-chip" onclick="filterCatMob('accessories',this)"><i class="fa fa-plug"></i> Accessories</button>
+  </div>
+
+  <div class="shop-layout">
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa fa-list"></i> Categories</div>
+        <div class="filter-list">
+          <div class="filter-item" onclick="filterCat('all',null)"><label class="filter-label"><input type="radio" name="cat" checked/> All Products</label><span class="filter-count">45</span></div>
+          <div class="filter-item" onclick="filterCat('phones',null)"><label class="filter-label"><input type="radio" name="cat"/> Smartphones</label><span class="filter-count">6</span></div>
+          <div class="filter-item" onclick="filterCat('laptops',null)"><label class="filter-label"><input type="radio" name="cat"/> Laptops</label><span class="filter-count">5</span></div>
+          <div class="filter-item" onclick="filterCat('audio',null)"><label class="filter-label"><input type="radio" name="cat"/> Audio</label><span class="filter-count">5</span></div>
+          <div class="filter-item" onclick="filterCat('gaming',null)"><label class="filter-label"><input type="radio" name="cat"/> Gaming</label><span class="filter-count">6</span></div>
+          <div class="filter-item" onclick="filterCat('watches',null)"><label class="filter-label"><input type="radio" name="cat"/> Smartwatches</label><span class="filter-count">4</span></div>
+          <div class="filter-item" onclick="filterCat('tablets',null)"><label class="filter-label"><input type="radio" name="cat"/> Tablets</label><span class="filter-count">5</span></div>
+          <div class="filter-item" onclick="filterCat('cameras',null)"><label class="filter-label"><input type="radio" name="cat"/> Cameras</label><span class="filter-count">5</span></div>
+          <div class="filter-item" onclick="filterCat('accessories',null)"><label class="filter-label"><input type="radio" name="cat"/> Accessories</label><span class="filter-count">9</span></div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa fa-tag"></i> Price Range</div>
+        <div class="price-range">
+          <div class="price-inputs"><input class="price-inp" type="number" id="minPrice" placeholder="Min &#8358;" value="0"/><input class="price-inp" type="number" id="maxPrice" placeholder="Max &#8358;" value="1000000"/></div>
+          <button class="apply-price" onclick="applyPrice()">Apply Filter</button>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-title"><i class="fa fa-star"></i> Rating</div>
+        <div class="rating-list">
+          <div class="rating-item" onclick="filterRating(5)"><span class="stars-o">&#9733;&#9733;&#9733;&#9733;&#9733;</span> 5.0 only</div>
+          <div class="rating-item" onclick="filterRating(4)"><span class="stars-o">&#9733;&#9733;&#9733;&#9733;&#9734;</span> 4.0+</div>
+          <div class="rating-item" onclick="filterRating(3)"><span class="stars-o">&#9733;&#9733;&#9733;&#9734;&#9734;</span> 3.0+</div>
+          <div class="rating-item" onclick="filterRating(0)">All ratings</div>
+        </div>
+      </div>
+    </aside>
+
+    <div>
+      <div class="products-topbar">
+        <div><h2 id="shop-title">All Products</h2><div class="products-count" id="prod-count">45 products found</div></div>
+        <select class="sort-select" onchange="sortProducts(this.value)">
+          <option value="default">Sort: Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+      </div>
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT PAGE -->
+<div class="page" id="page-checkout">
+  <div class="page-header">
+    <div class="page-header-inner">
+      <h1>Checkout</h1>
+      <div class="breadcrumb"><span onclick="goTo('shop')">Shop</span> / Checkout</div>
+    </div>
+  </div>
+  <div class="checkout-wrap">
+    <div>
+      <div class="checkout-steps">
+        <div class="step-item"><div class="step-circle current" id="sc-1"><i class="fa fa-user"></i></div><div class="step-label current" id="sl-1">Details</div></div>
+        <div class="step-line" id="sline-1"></div>
+        <div class="step-item"><div class="step-circle pending" id="sc-2"><i class="fa fa-map-marker-alt"></i></div><div class="step-label" id="sl-2">Delivery</div></div>
+        <div class="step-line" id="sline-2"></div>
+        <div class="step-item"><div class="step-circle pending" id="sc-3"><i class="fa fa-credit-card"></i></div><div class="step-label" id="sl-3">Payment</div></div>
+        <div class="step-line" id="sline-3"></div>
+        <div class="step-item"><div class="step-circle pending" id="sc-4"><i class="fa fa-check"></i></div><div class="step-label" id="sl-4">Review</div></div>
+      </div>
+
+      <div id="co-step-1">
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-user"></i> Personal Information</div>
+          <div class="form-grid">
+            <div class="form-group"><label>First Name *</label><input class="form-input" id="f-firstname" type="text" placeholder="Enter first name"/></div>
+            <div class="form-group"><label>Last Name *</label><input class="form-input" id="f-lastname" type="text" placeholder="Enter last name"/></div>
+            <div class="form-group"><label>Email Address *</label><input class="form-input" id="f-email" type="email" placeholder="your@email.com"/></div>
+            <div class="form-group"><label>Phone Number *</label><input class="form-input" id="f-phone" type="tel" placeholder="08012345678"/></div>
+          </div>
+        </div>
+        <button class="btn-place" onclick="nextStep(2)">Continue to Delivery <i class="fa fa-arrow-right"></i></button>
+      </div>
+
+      <div id="co-step-2" style="display:none">
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-map-marker-alt"></i> Delivery Address</div>
+          <div class="form-grid">
+            <div class="form-group full"><label>Street Address *</label><input class="form-input" id="f-address" type="text" placeholder="House no, street name"/></div>
+            <div class="form-group"><label>City *</label><input class="form-input" id="f-city" type="text" placeholder="e.g. Lagos"/></div>
+            <div class="form-group"><label>State *</label>
+              <select class="form-select" id="f-state">
+                <option value="">Select State</option>
+                <option>Abia</option><option>Adamawa</option><option>Akwa Ibom</option><option>Anambra</option><option>Bauchi</option><option>Bayelsa</option><option>Benue</option><option>Borno</option><option>Cross River</option><option>Delta</option><option>Ebonyi</option><option>Edo</option><option>Ekiti</option><option>Enugu</option><option>FCT Abuja</option><option>Gombe</option><option>Imo</option><option>Jigawa</option><option>Kaduna</option><option>Kano</option><option>Katsina</option><option>Kebbi</option><option>Kogi</option><option>Kwara</option><option selected>Lagos</option><option>Nasarawa</option><option>Niger</option><option>Ogun</option><option>Ondo</option><option>Osun</option><option>Oyo</option><option>Plateau</option><option>Rivers</option><option>Sokoto</option><option>Taraba</option><option>Yobe</option><option>Zamfara</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Nearest Landmark</label><input class="form-input" id="f-landmark" type="text" placeholder="e.g. Near GTBank"/></div>
+            <div class="form-group full"><label>Delivery Note</label><textarea class="form-textarea" id="f-note" placeholder="Any special instructions..."></textarea></div>
+          </div>
+        </div>
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-truck"></i> Delivery Method</div>
+          <div class="pay-opts-grid">
+            <div class="pay-opt selected" onclick="selectDelivery(this,'standard')"><i class="fa fa-truck"></i><div><div class="pay-opt-info">Standard Delivery</div><div class="pay-opt-sub">2-4 business days &middot; &#8358;2,500</div></div></div>
+            <div class="pay-opt" onclick="selectDelivery(this,'express')"><i class="fa fa-bolt"></i><div><div class="pay-opt-info">Express Delivery</div><div class="pay-opt-sub">Same day (Lagos) &middot; &#8358;5,000</div></div></div>
+          </div>
+        </div>
+        <div class="step-btns">
+          <button class="btn-back" onclick="nextStep(1)"><i class="fa fa-arrow-left"></i> Back</button>
+          <button class="btn-place" onclick="nextStep(3)">Continue to Payment <i class="fa fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <div id="co-step-3" style="display:none">
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-credit-card"></i> Payment Method</div>
+          <div class="pay-opts-grid">
+            <div class="pay-opt selected" id="popt-transfer" onclick="selectPayment(this,'transfer')"><i class="fa fa-university"></i><div><div class="pay-opt-info">Bank Transfer</div><div class="pay-opt-sub">Transfer to our account</div></div></div>
+            <div class="pay-opt" id="popt-cod" onclick="selectPayment(this,'cod')"><i class="fa fa-money-bill-wave"></i><div><div class="pay-opt-info">Pay on Delivery</div><div class="pay-opt-sub">Cash at your door</div></div></div>
+            <div class="pay-opt" id="popt-card" onclick="selectPayment(this,'card')"><i class="fa fa-credit-card"></i><div><div class="pay-opt-info">Debit / Credit Card</div><div class="pay-opt-sub">Visa, Mastercard</div></div></div>
+            <div class="pay-opt" id="popt-ussd" onclick="selectPayment(this,'ussd')"><i class="fa fa-mobile-alt"></i><div><div class="pay-opt-info">USSD Banking</div><div class="pay-opt-sub">*737# and others</div></div></div>
+          </div>
+          <div class="payment-panel show" id="panel-transfer">
+            <div class="pay-stage show" id="tr-stage-1">
+              <p style="font-size:.81rem;color:var(--muted);margin:.85rem 0 .75rem;display:flex;align-items:flex-start;gap:.4rem;line-height:1.55"><i class="fa fa-info-circle" style="color:var(--orange);flex-shrink:0;margin-top:2px"></i> Transfer the exact amount to the account below, then upload your receipt and click Confirm.</p>
+              <div class="acct-card">
+                <div class="acct-bank-label"><i class="fa fa-university"></i> Guaranty Trust Bank (GTB)</div>
+                <div class="acct-name-label">TechZone Nigeria Ltd</div>
+                <div class="acct-num-row">
+                  <div class="acct-num-val">0123 456 789</div>
+                  <button class="copy-acct-btn" onclick="copyAcct()"><i class="fa fa-copy"></i> Copy</button>
+                </div>
+                <div class="acct-meta-grid">
+                  <div class="acct-meta-box"><div class="acct-meta-lbl">Amount to Pay</div><div class="acct-meta-val acct-amount-val" id="bank-amount">&#8358;0</div></div>
+                  <div class="acct-meta-box"><div class="acct-meta-lbl">Reference / Narration</div><div class="acct-meta-val" id="bank-ref" style="font-size:.8rem">-</div></div>
+                </div>
+              </div>
+              <div class="how-to-box">
+                <div class="how-to-title"><i class="fa fa-list-ol"></i> Steps to pay</div>
+                <div class="how-to-item"><div class="how-num">1</div>Copy the account number above</div>
+                <div class="how-to-item"><div class="how-num">2</div>Open your banking app or visit any GTB branch</div>
+                <div class="how-to-item"><div class="how-num">3</div>Transfer the exact amount - use your Order ID as the narration</div>
+                <div class="how-to-item"><div class="how-num">4</div>Upload your receipt below, then click <strong>I've Paid</strong></div>
+              </div>
+              <div class="form-group">
+                <label style="margin-bottom:.5rem">Upload Payment Receipt <span style="color:var(--muted);font-weight:400">(recommended)</span></label>
+                <div class="upload-area" id="proof-drop">
+                  <i class="fa fa-cloud-upload-alt"></i>
+                  <p><strong style="color:var(--orange)">Click to upload</strong> or drag &amp; drop</p>
+                  <p style="font-size:.74rem;margin-top:3px">JPG, PNG or PDF &bull; Max 5 MB</p>
+                  <input type="file" id="proof-file" accept="image/*,.pdf" onchange="handleProof(this)"/>
+                </div>
+                <div class="proof-preview" id="proof-preview">
+                  <i class="fa fa-check-circle"></i>
+                  <span id="proof-filename">receipt.jpg</span>
+                  <button onclick="clearProof()"><i class="fa fa-times"></i></button>
+                </div>
+              </div>
+              <button class="btn-confirm-pay" onclick="confirmTransfer()"><i class="fa fa-check-circle"></i> I've Made the Transfer - Continue</button>
+            </div>
+            <div class="pay-stage" id="tr-stage-2">
+              <div class="confirmed-badge"><i class="fa fa-check-circle"></i><div><h5>Transfer Confirmed</h5><p>Your payment details have been noted. We'll verify your transfer and confirm the order within <strong>1 hour</strong>. Proceed to review your order.</p></div></div>
+            </div>
+          </div>
+          <div class="payment-panel" id="panel-cod">
+            <div class="cod-box" style="margin-top:1.25rem">
+              <h4><i class="fa fa-money-bill-wave"></i> Pay on Delivery</h4>
+              <div class="cod-note">Have the <strong>exact cash amount</strong> ready when our agent arrives.</div>
+              <div class="cod-amt" id="cod-amount">&#8358;0</div>
+              <div class="cod-note" style="font-size:.78rem"><i class="fa fa-exclamation-triangle" style="color:var(--orange)"></i> &nbsp;Cash only - please prepare exact change.</div>
+            </div>
+          </div>
+          <div class="payment-panel" id="panel-card">
+            <div style="margin-top:1.25rem">
+              <div style="display:flex;gap:.5rem;margin-bottom:.85rem">
+                <span style="background:#1a1f71;color:#fff;font-size:.7rem;font-weight:800;padding:4px 8px;border-radius:4px;letter-spacing:.5px">VISA</span>
+                <span style="background:#eb001b;color:#fff;font-size:.65rem;font-weight:800;padding:4px 8px;border-radius:4px">MC</span>
+                <span style="background:#006fcf;color:#fff;font-size:.65rem;font-weight:800;padding:4px 8px;border-radius:4px">AMEX</span>
+              </div>
+              <div class="card-form">
+                <div class="form-group"><label>Card Number</label><input class="form-input" type="text" placeholder="0000  0000  0000  0000" maxlength="19" oninput="fmtCard(this)"/></div>
+                <div class="form-grid"><div class="form-group"><label>Expiry</label><input class="form-input" type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"/></div><div class="form-group"><label>CVV</label><input class="form-input" type="password" placeholder="..." maxlength="4"/></div></div>
+                <div class="form-group"><label>Name on Card</label><input class="form-input" type="text" placeholder="As printed on card"/></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:.45rem;margin-top:.75rem;font-size:.75rem;color:var(--muted)"><i class="fa fa-lock" style="color:var(--green)"></i> Your card details are encrypted &amp; secure</div>
+            </div>
+          </div>
+          <div class="payment-panel" id="panel-ussd">
+            <div style="margin-top:1.25rem">
+              <p style="font-size:.82rem;color:var(--muted);margin-bottom:.85rem">Dial your bank's USSD code and follow the prompts to pay <strong style="color:var(--navy)" id="ussd-amount">&#8358;0</strong>.</p>
+              <div class="ussd-list">
+                <div class="ussd-row"><div><div class="ussd-code">*737#</div><div class="ussd-bank">GTBank</div></div><i class="fa fa-chevron-right" style="color:var(--light)"></i></div>
+                <div class="ussd-row"><div><div class="ussd-code">*894#</div><div class="ussd-bank">First Bank</div></div><i class="fa fa-chevron-right" style="color:var(--light)"></i></div>
+                <div class="ussd-row"><div><div class="ussd-code">*919#</div><div class="ussd-bank">Access Bank</div></div><i class="fa fa-chevron-right" style="color:var(--light)"></i></div>
+                <div class="ussd-row"><div><div class="ussd-code">*901#</div><div class="ussd-bank">UBA</div></div><i class="fa fa-chevron-right" style="color:var(--light)"></i></div>
+                <div class="ussd-row"><div><div class="ussd-code">*966#</div><div class="ussd-bank">Zenith Bank</div></div><i class="fa fa-chevron-right" style="color:var(--light)"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="step-btns" style="margin-top:1.5rem">
+          <button class="btn-back" onclick="nextStep(2)"><i class="fa fa-arrow-left"></i> Back</button>
+          <button class="btn-place" onclick="nextStep(4)">Review Order <i class="fa fa-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <div id="co-step-4" style="display:none">
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-check-circle"></i> Review Your Order</div>
+          <div id="confirm-details"></div>
+        </div>
+        <div class="checkout-section">
+          <div class="co-title"><i class="fa fa-shield-alt"></i> Terms</div>
+          <label style="display:flex;align-items:flex-start;gap:.6rem;font-size:.85rem;color:var(--muted);cursor:pointer;line-height:1.65;font-weight:400">
+            <input type="checkbox" id="agree-terms" style="accent-color:var(--orange);margin-top:3px;flex-shrink:0"/>
+            I agree to TechZone's Terms of Service and Privacy Policy and confirm that all details are correct.
+          </label>
+        </div>
+        <div class="step-btns">
+          <button class="btn-back" onclick="nextStep(3)"><i class="fa fa-arrow-left"></i> Back</button>
+          <button class="btn-place" onclick="placeOrder()" id="place-btn"><i class="fa fa-check"></i> Place Order Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="order-summary">
+      <div class="os-title">Your Order</div>
+      <div class="os-items" id="os-items"></div>
+      <hr class="os-divider"/>
+      <div class="os-row"><span>Subtotal</span><span id="os-sub">&#8358;0</span></div>
+      <div class="os-row"><span>Delivery</span><span id="os-del">&#8358;2,500</span></div>
+      <div class="os-total"><span>Total</span><span class="os-amt" id="os-total">&#8358;0</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS PAGE -->
+<div class="page" id="page-success">
+  <div class="success-wrap">
+    <div class="success-icon"><i class="fa fa-check"></i></div>
+    <h1 class="success-title">Order Placed!</h1>
+    <p class="success-sub">Thank you! Your order has been received and is being processed.</p>
+    <div class="success-order">
+      <div class="so-row"><span class="so-label">Order ID</span><span class="so-val" id="s-orderid">#TZ-000000</span></div>
+      <div class="so-row"><span class="so-label">Customer</span><span class="so-val" id="s-name">-</span></div>
+      <div class="so-row"><span class="so-label">Email</span><span class="so-val" id="s-email">-</span></div>
+      <div class="so-row"><span class="so-label">Phone</span><span class="so-val" id="s-phone">-</span></div>
+      <div class="so-row"><span class="so-label">Address</span><span class="so-val" id="s-address">-</span></div>
+      <div class="so-row"><span class="so-label">Payment</span><span class="so-val" id="s-payment">-</span></div>
+      <div class="so-row"><span class="so-label">Total</span><span class="so-val" id="s-total" style="color:var(--orange)">&#8358;0</span></div>
+      <div class="so-row"><span class="so-label">Status</span><span class="so-val" style="color:var(--green)"><i class="fa fa-circle" style="font-size:.45rem;vertical-align:middle"></i> Processing</span></div>
+    </div>
+    <button class="btn-go-home" onclick="goTo('shop')"><i class="fa fa-arrow-left"></i> Continue Shopping</button>
+  </div>
+</div>
+
+<!-- CART -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-head">
+    <h3><i class="fa fa-shopping-cart"></i> My Cart (<span id="cd-count">0</span>)</h3>
+    <button class="close-btn" onclick="closeCart()"><i class="fa fa-times"></i></button>
+  </div>
+  <div class="cart-items" id="cart-items-list">
+    <div class="cart-empty"><i class="fa fa-shopping-cart"></i><p>Your cart is empty.<br/>Browse and add items!</p></div>
+  </div>
+  <div class="cart-foot" id="cart-foot" style="display:none">
+    <div class="cart-summary">
+      <div class="cart-row"><span>Subtotal</span><span id="cart-sub">&#8358;0</span></div>
+      <div class="cart-row"><span>Delivery</span><span>From &#8358;2,500</span></div>
+      <div class="cart-row total"><span>Estimated Total</span><span id="cart-total">&#8358;0</span></div>
+    </div>
+    <button class="btn-checkout" onclick="goToCheckout()"><i class="fa fa-lock"></i> Proceed to Checkout</button>
+    <button class="btn-continue" onclick="closeCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa fa-check-circle"></i><span id="toast-msg">Done!</span></div>
+
+<form id="formspree-form" action="https://formspree.io/f/mojblvaa" method="POST" style="display:none">
+  <input type="hidden" name="_subject" id="fs-subject"/>
+  <input type="hidden" name="order_id" id="fs-orderid"/>
+  <input type="hidden" name="customer_name" id="fs-name"/>
+  <input type="hidden" name="email" id="fs-email"/>
+  <input type="hidden" name="phone" id="fs-phone"/>
+  <input type="hidden" name="address" id="fs-address"/>
+  <input type="hidden" name="state" id="fs-state"/>
+  <input type="hidden" name="delivery_method" id="fs-delivery"/>
+  <input type="hidden" name="payment_method" id="fs-payment"/>
+  <input type="hidden" name="order_items" id="fs-items"/>
+  <input type="hidden" name="total_amount" id="fs-total"/>
+</form>
+
+<script>
+const PRODUCTS=[
+  {id:1,name:'iPhone 15 Pro Max 256GB',cat:'phones',price:680000,old:null,rating:4.9,reviews:1240,badge:'hot',img:'https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=300&fit=crop'},
+  {id:2,name:'Samsung Galaxy S24 Ultra',cat:'phones',price:320000,old:376000,rating:4.8,reviews:890,badge:'sale',img:'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=300&fit=crop'},
+  {id:3,name:'Google Pixel 8 Pro',cat:'phones',price:280000,old:320000,rating:4.7,reviews:540,badge:'sale',img:'https://images.unsplash.com/photo-1598327105854-c8674faddf79?w=400&h=300&fit=crop'},
+  {id:4,name:'OnePlus 12 - 12GB RAM',cat:'phones',price:195000,old:null,rating:4.6,reviews:320,badge:'new',img:'https://images.unsplash.com/photo-1574944985070-8f3ebc6b79d2?w=400&h=300&fit=crop'},
+  {id:5,name:'Xiaomi 14 Ultra',cat:'phones',price:250000,old:290000,rating:4.5,reviews:210,badge:'sale',img:'https://images.unsplash.com/photo-1567581935884-3349723552ca?w=400&h=300&fit=crop'},
+  {id:6,name:'iPhone 14 - 128GB',cat:'phones',price:490000,old:550000,rating:4.8,reviews:2100,badge:'sale',img:'https://images.unsplash.com/photo-1678685888221-cda773a3dcdb?w=400&h=300&fit=crop'},
+  {id:7,name:'MacBook Air M3 - 16GB',cat:'laptops',price:890000,old:null,rating:5.0,reviews:542,badge:'new',img:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=300&fit=crop'},
+  {id:8,name:'Dell XPS 15 - Core i9',cat:'laptops',price:720000,old:810000,rating:4.7,reviews:380,badge:'sale',img:'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop'},
+  {id:9,name:'HP Spectre x360 14"',cat:'laptops',price:580000,old:650000,rating:4.6,reviews:290,badge:'sale',img:'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=400&h=300&fit=crop'},
+  {id:10,name:'Lenovo ThinkPad X1 Carbon',cat:'laptops',price:650000,old:null,rating:4.8,reviews:410,badge:'hot',img:'https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=300&fit=crop'},
+  {id:11,name:'Asus ROG Zephyrus G14',cat:'laptops',price:750000,old:820000,rating:4.7,reviews:320,badge:'sale',img:'https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&h=300&fit=crop'},
+  {id:12,name:'Sony WH-1000XM5',cat:'audio',price:95000,old:118000,rating:4.9,reviews:2100,badge:'sale',img:'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=300&fit=crop'},
+  {id:13,name:'AirPods Pro 2nd Gen',cat:'audio',price:120000,old:140000,rating:4.8,reviews:3200,badge:'hot',img:'https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=400&h=300&fit=crop'},
+  {id:14,name:'Bose QuietComfort 45',cat:'audio',price:85000,old:98000,rating:4.7,reviews:870,badge:'sale',img:'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=300&fit=crop'},
+  {id:15,name:'JBL Charge 5 Speaker',cat:'audio',price:35000,old:42000,rating:4.6,reviews:1540,badge:'sale',img:'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=300&fit=crop'},
+  {id:16,name:'Samsung Galaxy Buds 2 Pro',cat:'audio',price:55000,old:null,rating:4.5,reviews:680,badge:'new',img:'https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400&h=300&fit=crop'},
+  {id:17,name:'PlayStation 5 Console',cat:'gaming',price:430000,old:478000,rating:4.9,reviews:3400,badge:'sale',img:'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=300&fit=crop'},
+  {id:18,name:'Xbox Series X',cat:'gaming',price:395000,old:430000,rating:4.8,reviews:2100,badge:'sale',img:'https://images.unsplash.com/photo-1605901309584-818e25960a8f?w=400&h=300&fit=crop'},
+  {id:19,name:'Nintendo Switch OLED',cat:'gaming',price:185000,old:210000,rating:4.7,reviews:1900,badge:'sale',img:'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=400&h=300&fit=crop'},
+  {id:20,name:'Razer DeathAdder V3 Pro',cat:'gaming',price:28000,old:null,rating:4.6,reviews:760,badge:'new',img:'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=400&h=300&fit=crop'},
+  {id:45,name:'SteelSeries Arctis Nova 7',cat:'gaming',price:62000,old:75000,rating:4.7,reviews:530,badge:'sale',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'},
+  {id:46,name:'Logitech G Pro X Superlight',cat:'gaming',price:35000,old:40000,rating:4.8,reviews:1100,badge:'sale',img:'https://images.unsplash.com/photo-1527814050087-3793815479db?w=400&h=300&fit=crop'},
+  {id:21,name:'Apple Watch Series 9 - 45mm',cat:'watches',price:210000,old:null,rating:4.8,reviews:780,badge:'new',img:'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400&h=300&fit=crop'},
+  {id:22,name:'Samsung Galaxy Watch 6 Classic',cat:'watches',price:145000,old:170000,rating:4.6,reviews:540,badge:'sale',img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=300&fit=crop'},
+  {id:23,name:'Garmin Fenix 7 Solar',cat:'watches',price:320000,old:360000,rating:4.8,reviews:420,badge:'sale',img:'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400&h=300&fit=crop'},
+  {id:24,name:'Fitbit Sense 2',cat:'watches',price:95000,old:110000,rating:4.4,reviews:890,badge:'sale',img:'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=300&fit=crop'},
+  {id:25,name:'iPad Pro 12.9" M4 - 256GB',cat:'tablets',price:780000,old:null,rating:4.9,reviews:1120,badge:'new',img:'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=300&fit=crop'},
+  {id:26,name:'Samsung Galaxy Tab S9 Ultra',cat:'tablets',price:520000,old:590000,rating:4.8,reviews:730,badge:'sale',img:'https://images.unsplash.com/photo-1585790050230-5dd28404ccb9?w=400&h=300&fit=crop'},
+  {id:27,name:'iPad Air 5th Gen - 64GB',cat:'tablets',price:380000,old:420000,rating:4.7,reviews:940,badge:'sale',img:'https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=300&fit=crop'},
+  {id:28,name:'Lenovo Tab P12 Pro',cat:'tablets',price:220000,old:260000,rating:4.5,reviews:310,badge:'sale',img:'https://images.unsplash.com/photo-1587033411391-5d9e51cce126?w=400&h=300&fit=crop'},
+  {id:29,name:'Microsoft Surface Pro 10',cat:'tablets',price:650000,old:720000,rating:4.7,reviews:480,badge:'sale',img:'https://images.unsplash.com/photo-1542744094-24638eff58bb?w=400&h=300&fit=crop'},
+  {id:30,name:'Sony Alpha A7 IV Mirrorless',cat:'cameras',price:980000,old:null,rating:5.0,reviews:640,badge:'hot',img:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=300&fit=crop'},
+  {id:31,name:'Canon EOS R6 Mark II',cat:'cameras',price:850000,old:920000,rating:4.9,reviews:510,badge:'sale',img:'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=300&fit=crop'},
+  {id:32,name:'Fujifilm X-T5 - 40MP',cat:'cameras',price:680000,old:750000,rating:4.8,reviews:390,badge:'sale',img:'https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?w=400&h=300&fit=crop'},
+  {id:33,name:'GoPro HERO12 Black',cat:'cameras',price:145000,old:168000,rating:4.7,reviews:1870,badge:'sale',img:'https://images.unsplash.com/photo-1601506521793-dc748fc80b67?w=400&h=300&fit=crop'},
+  {id:34,name:'DJI Osmo Pocket 3',cat:'cameras',price:195000,old:220000,rating:4.8,reviews:760,badge:'sale',img:'https://images.unsplash.com/photo-1508921340878-ba53e1f016ec?w=400&h=300&fit=crop'},
+  {id:35,name:'Anker 733 Power Bank 65W',cat:'accessories',price:22000,old:28000,rating:4.8,reviews:2300,badge:'sale',img:'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?w=400&h=300&fit=crop'},
+  {id:36,name:'Apple MagSafe Charger 15W',cat:'accessories',price:18000,old:null,rating:4.7,reviews:1540,badge:'new',img:'https://images.unsplash.com/photo-1601524909162-ae8725290836?w=400&h=300&fit=crop'},
+  {id:37,name:'Samsung 45W Super Fast Charger',cat:'accessories',price:12500,old:15000,rating:4.6,reviews:980,badge:'sale',img:'https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=400&h=300&fit=crop'},
+  {id:38,name:'Logitech MX Master 3S Mouse',cat:'accessories',price:38000,old:45000,rating:4.9,reviews:1760,badge:'sale',img:'https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=400&h=300&fit=crop'},
+  {id:39,name:'Keychron K2 Pro Keyboard',cat:'accessories',price:48000,old:55000,rating:4.8,reviews:890,badge:'sale',img:'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=400&h=300&fit=crop'},
+  {id:40,name:'Belkin 3-in-1 Wireless Charger',cat:'accessories',price:35000,old:42000,rating:4.6,reviews:620,badge:'sale',img:'https://images.unsplash.com/photo-1615526675159-e248c3021d3f?w=400&h=300&fit=crop'},
+  {id:41,name:'HDMI 2.1 Ultra HD Cable 8K',cat:'accessories',price:5500,old:7500,rating:4.5,reviews:430,badge:'sale',img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop'},
+  {id:42,name:'USB-C Hub 10-in-1',cat:'accessories',price:19500,old:25000,rating:4.7,reviews:1120,badge:'sale',img:'https://images.unsplash.com/photo-1625842268584-8f3296236761?w=400&h=300&fit=crop'},
+  {id:43,name:'Spigen Slim Armor Case - iPhone 15',cat:'accessories',price:8500,old:11000,rating:4.6,reviews:2400,badge:'sale',img:'https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=300&fit=crop'},
+  {id:44,name:'Sony SRS-XB100 Portable Speaker',cat:'accessories',price:16000,old:20000,rating:4.5,reviews:880,badge:'sale',img:'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=300&fit=crop'},
+];
+
+let cart=[],currentCat='all',currentSort='default',minPriceFilt=0,maxPriceFilt=9999999,minRating=0;
+let selectedDelivery='standard',selectedPayment='transfer',deliveryFee=2500,currentStep=1;
+let _orderId='';
+
+/* Profile Photo Upload */
+function handleAvatarChange(input){
+  if(!input.files||!input.files[0])return;
+  const file=input.files[0];
+  if(file.size>5*1024*1024){showPhotoToast('File too large - max 5 MB');return;}
+  const reader=new FileReader();
+  reader.onload=function(e){
+    const src=e.target.result;
+    document.getElementById('navAvatarImg').src=src;
+    document.getElementById('navAvatar').classList.add('has-photo');
+    document.getElementById('dropdownAvatarImg').src=src;
+    document.getElementById('dropdownAvatar').classList.add('has-photo');
+    document.getElementById('mobAvatarImg').src=src;
+    document.getElementById('mobAvatar').classList.add('has-photo');
+    showPhotoToast('Profile photo updated!');
+  };
+  reader.readAsDataURL(file);
+}
+
+function showPhotoToast(msg){
+  const t=document.getElementById('photoToast');
+  document.getElementById('photoToastMsg').textContent=msg;
+  t.classList.add('show');
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* User Dropdown */
+function toggleUserMenu(e){
+  e.stopPropagation();
+  document.getElementById('userMenuWrap').classList.toggle('open');
+}
+document.addEventListener('click',function(){
+  document.getElementById('userMenuWrap').classList.remove('open');
+});
+document.getElementById('userDropdown').addEventListener('click',function(e){e.stopPropagation();});
+
+/* Pages */
+function goTo(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.getElementById('page-'+p).classList.add('active');window.scrollTo(0,0);if(p==='checkout')buildCheckoutSummary();}
+function toggleMobNav(){document.getElementById('mobNav').classList.toggle('open');}
+function catLabel(c){return{phones:'Smartphones',laptops:'Laptops',audio:'Audio',gaming:'Gaming',watches:'Smartwatches',tablets:'Tablets',cameras:'Cameras',accessories:'Accessories'}[c]||c;}
+
+function renderProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  let list=PRODUCTS.filter(p=>(currentCat==='all'||p.cat===currentCat)&&(!q||p.name.toLowerCase().includes(q))&&p.price>=minPriceFilt&&p.price<=maxPriceFilt&&p.rating>=minRating);
+  if(currentSort==='price-asc')list.sort((a,b)=>a.price-b.price);
+  else if(currentSort==='price-desc')list.sort((a,b)=>b.price-a.price);
+  else if(currentSort==='rating')list.sort((a,b)=>b.rating-a.rating);
+  document.getElementById('prod-count').textContent=list.length+' products found';
+  const grid=document.getElementById('products-grid');
+  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:4rem;color:var(--muted)"><i class="fa fa-search" style="font-size:2.5rem;color:var(--light);display:block;margin-bottom:1rem"></i>No products found.</div>';return;}
+  grid.innerHTML=list.map(p=>{const d=p.old?Math.round((1-p.price/p.old)*100):0;return`<div class="prod-card" onclick="addToCart(${p.id})"><div class="prod-img-wrap"><img class="prod-img" src="${p.img}" alt="${p.name}" loading="lazy"/>${p.badge?`<span class="prod-badge b-${p.badge}">${p.badge==='sale'?'-'+d+'%':p.badge.toUpperCase()}</span>`:''}<button class="prod-wish" onclick="event.stopPropagation();this.classList.toggle('on')"><i class="fa fa-heart"></i></button></div><div class="prod-body"><div class="prod-cat">${catLabel(p.cat)}</div><div class="prod-name">${p.name}</div><div class="prod-rating"><span class="stars-s">${'&#9733;'.repeat(Math.round(p.rating))}${'&#9734;'.repeat(5-Math.round(p.rating))}</span><span class="rating-txt">${p.rating} (${p.reviews.toLocaleString()})</span></div><div class="prod-foot"><div><div class="prod-price">&#8358;${p.price.toLocaleString()}</div>${p.old?`<div class="prod-old">&#8358;${p.old.toLocaleString()}</div>`:''}</div><button class="add-btn" onclick="event.stopPropagation();addToCart(${p.id})"><i class="fa fa-plus"></i></button></div></div></div>`;}).join('');
+}
+
+function filterCat(cat,btn){currentCat=cat;document.querySelectorAll('.nav-cat-btn').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');const t={all:'All Products',phones:'Smartphones',laptops:'Laptops',audio:'Audio & Headphones',gaming:'Gaming',watches:'Smartwatches',tablets:'Tablets',cameras:'Cameras',accessories:'Accessories'};document.getElementById('shop-title').textContent=t[cat]||'Products';renderProducts();}
+function filterCatMob(cat,btn){document.querySelectorAll('.mob-filter-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');filterCat(cat,null);}
+function searchProducts(){renderProducts();}
+function sortProducts(v){currentSort=v;renderProducts();}
+function applyPrice(){minPriceFilt=parseInt(document.getElementById('minPrice').value)||0;maxPriceFilt=parseInt(document.getElementById('maxPrice').value)||9999999;renderProducts();}
+function filterRating(r){minRating=r;renderProducts();}
+
+function addToCart(id){const p=PRODUCTS.find(x=>x.id===id);const ex=cart.find(x=>x.id===id);if(ex)ex.qty++;else cart.push({...p,qty:1});updateCartUI();showToast(p.name.split('-')[0].trim()+' added to cart!');openCart();}
+function removeFromCart(id){cart=cart.filter(x=>x.id!==id);updateCartUI();}
+function changeQty(id,d){const item=cart.find(x=>x.id===id);if(!item)return;item.qty+=d;if(item.qty<=0)removeFromCart(id);else updateCartUI();}
+function cartSubtotal(){return cart.reduce((s,i)=>s+i.price*i.qty,0);}
+
+function updateCartUI(){
+  const count=cart.reduce((s,i)=>s+i.qty,0);
+  document.getElementById('cart-badge').textContent=count;
+  document.getElementById('cd-count').textContent=count;
+  document.getElementById('mob-cart-count').textContent=count;
+  const list=document.getElementById('cart-items-list'),foot=document.getElementById('cart-foot');
+  if(!cart.length){list.innerHTML='<div class="cart-empty"><i class="fa fa-shopping-cart"></i><p>Your cart is empty.<br/>Browse and add items!</p></div>';foot.style.display='none';return;}
+  foot.style.display='block';
+  list.innerHTML=cart.map(i=>`<div class="cart-item"><img class="ci-img" src="${i.img}" alt="${i.name}"/><div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-cat">${catLabel(i.cat)}</div><div class="ci-foot"><div class="ci-price">&#8358;${(i.price*i.qty).toLocaleString()}</div><div class="ci-qty"><button class="qty-btn" onclick="changeQty(${i.id},-1)"><i class="fa fa-minus"></i></button><span class="qty-num">${i.qty}</span><button class="qty-btn" onclick="changeQty(${i.id},1)"><i class="fa fa-plus"></i></button><button class="ci-del" onclick="removeFromCart(${i.id})"><i class="fa fa-trash"></i></button></div></div></div></div>`).join('');
+  const sub=cartSubtotal();
+  document.getElementById('cart-sub').textContent='&#8358;'+sub.toLocaleString();
+  document.getElementById('cart-total').textContent='&#8358;'+(sub+2500).toLocaleString();
+}
+
+function openCart(){document.getElementById('cart-drawer').classList.add('open');document.getElementById('cart-overlay').classList.add('open');}
+function closeCart(){document.getElementById('cart-drawer').classList.remove('open');document.getElementById('cart-overlay').classList.remove('open');}
+function goToCheckout(){if(!cart.length){showToast('Add items to cart first!');return;}closeCart();currentStep=1;showStep(1);goTo('checkout');}
+
+function showStep(n){
+  currentStep=n;
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('co-step-'+i);if(el)el.style.display=i===n?'block':'none';
+    const sc=document.getElementById('sc-'+i);if(sc)sc.className='step-circle '+(i<n?'done':i===n?'current':'pending');
+    const sl=document.getElementById('sl-'+i);if(sl)sl.className='step-label '+(i<n?'done':i===n?'current':'');
+    const ln=document.getElementById('sline-'+i);if(ln)ln.className='step-line '+(i<n?'done':'');
+  }
+  if(n===3)refreshPayAmounts();
+  if(n===4)buildConfirmDetails();
+  updateCheckoutSummary();
+}
+
+function nextStep(n){if(n>currentStep&&!validateStep(currentStep))return;showStep(n);window.scrollTo(0,0);}
+
+function validateStep(n){
+  if(n===1){
+    const fields=[['f-firstname','First name'],['f-lastname','Last name'],['f-email','Email'],['f-phone','Phone']];
+    for(const[id,lbl]of fields){const el=document.getElementById(id);if(!el.value.trim()){el.classList.add('err');showToast(lbl+' is required');el.focus();return false;}el.classList.remove('err');}
+    if(!/^\S+@\S+\.\S+$/.test(document.getElementById('f-email').value)){showToast('Enter a valid email');return false;}
+  }
+  if(n===2){
+    const fields=[['f-address','Street address'],['f-city','City'],['f-state','State']];
+    for(const[id,lbl]of fields){const el=document.getElementById(id);if(!el.value.trim()){showToast(lbl+' is required');el.focus();return false;}}
+  }
+  return true;
+}
+
+function selectDelivery(el,type){
+  document.querySelectorAll('#co-step-2 .pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');selectedDelivery=type;deliveryFee=type==='express'?5000:2500;updateCheckoutSummary();
+}
+
+function selectPayment(el,type){
+  document.querySelectorAll('.pay-opts-grid .pay-opt').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');selectedPayment=type;
+  document.querySelectorAll('.payment-panel').forEach(p=>p.classList.remove('show'));
+  document.getElementById('panel-'+type).classList.add('show');
+  refreshPayAmounts();
+}
+
+function refreshPayAmounts(){
+  const total=cartSubtotal()+deliveryFee;
+  const el=document.getElementById('bank-amount');if(el)el.textContent='&#8358;'+total.toLocaleString();
+  if(!_orderId)_orderId='TZ-'+Date.now().toString().slice(-6);
+  const ref=document.getElementById('bank-ref');if(ref&&ref.textContent==='-')ref.textContent=_orderId;
+  const cod=document.getElementById('cod-amount');if(cod)cod.textContent='&#8358;'+total.toLocaleString();
+  const ussd=document.getElementById('ussd-amount');if(ussd)ussd.textContent='&#8358;'+total.toLocaleString();
+}
+
+function copyAcct(){navigator.clipboard.writeText('0123456789').then(()=>showToast('Account number copied!')).catch(()=>showToast('Account: 0123456789'));}
+
+function handleProof(input){
+  if(!input.files[0])return;
+  document.getElementById('proof-filename').textContent=input.files[0].name;
+  document.getElementById('proof-preview').classList.add('show');
+  document.querySelector('.upload-area p').innerHTML='<strong style="color:var(--green)">Receipt uploaded!</strong>';
+}
+
+function clearProof(){
+  document.getElementById('proof-file').value='';
+  document.getElementById('proof-preview').classList.remove('show');
+  document.querySelector('.upload-area p').innerHTML='<strong style="color:var(--orange)">Click to upload</strong> or drag & drop';
+}
+
+function confirmTransfer(){
+  document.getElementById('tr-stage-1').classList.remove('show');
+  document.getElementById('tr-stage-2').classList.add('show');
+  showToast('Transfer noted! Proceed to review your order.');
+}
+
+function buildCheckoutSummary(){
+  document.getElementById('os-items').innerHTML=cart.map(i=>`<div class="os-item"><img class="os-img" src="${i.img}" alt="${i.name}"/><div><div class="os-name">${i.name}</div><div class="os-meta">Qty: ${i.qty}</div></div><div class="os-price">&#8358;${(i.price*i.qty).toLocaleString()}</div></div>`).join('');
+  updateCheckoutSummary();
+}
+
+function updateCheckoutSummary(){
+  const sub=cartSubtotal(),total=sub+deliveryFee;
+  document.getElementById('os-sub').textContent='&#8358;'+sub.toLocaleString();
+  document.getElementById('os-del').textContent='&#8358;'+deliveryFee.toLocaleString();
+  document.getElementById('os-total').textContent='&#8358;'+total.toLocaleString();
+}
+
+function buildConfirmDetails(){
+  const fn=document.getElementById('f-firstname').value,ln=document.getElementById('f-lastname').value;
+  const em=document.getElementById('f-email').value,ph=document.getElementById('f-phone').value;
+  const ad=document.getElementById('f-address').value,ci=document.getElementById('f-city').value;
+  const st=document.getElementById('f-state').value,lm=document.getElementById('f-landmark').value;
+  const pm={transfer:'Bank Transfer',cod:'Pay on Delivery',card:'Debit/Credit Card',ussd:'USSD Banking'}[selectedPayment];
+  const dl=selectedDelivery==='express'?'Express (Same Day) - &#8358;5,000':'Standard (2-4 Days) - &#8358;2,500';
+  const total=cartSubtotal()+deliveryFee;
+  document.getElementById('confirm-details').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem 1.5rem;font-size:.85rem">
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Customer</div><div style="font-weight:600">${fn} ${ln}</div></div>
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Phone</div><div style="font-weight:600">${ph}</div></div>
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Email</div><div style="font-weight:600;word-break:break-all">${em}</div></div>
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">State</div><div style="font-weight:600">${st}</div></div>
+    <div style="grid-column:1/-1"><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Address</div><div style="font-weight:600">${ad}, ${ci}${lm?' (Near '+lm+')':''}</div></div>
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Delivery</div><div style="font-weight:600">${dl}</div></div>
+    <div><div style="color:var(--muted);font-size:.75rem;margin-bottom:2px">Payment</div><div style="font-weight:600">${pm}</div></div>
+    <div style="grid-column:1/-1;padding-top:.75rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700">Total Amount</span><span style="font-family:'Clash Display',sans-serif;font-size:1.2rem;font-weight:700;color:var(--orange)">&#8358;${total.toLocaleString()}</span></div>
+  </div>`;
+}
+
+function fmtCard(el){el.value=el.value.replace(/\D/g,'').replace(/(.{4})/g,'$1 ').trim().slice(0,19);}
+function fmtExpiry(el){let v=el.value.replace(/\D/g,'');if(v.length>=3)v=v.slice(0,2)+' / '+v.slice(2,4);el.value=v;}
+
+function placeOrder(){
+  if(!document.getElementById('agree-terms').checked){showToast('Please agree to the terms to continue');return;}
+  const btn=document.getElementById('place-btn');btn.disabled=true;btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> Processing...';
+  if(!_orderId)_orderId='TZ-'+Date.now().toString().slice(-6);
+  const orderId='#'+_orderId;
+  const fn=document.getElementById('f-firstname').value,ln=document.getElementById('f-lastname').value;
+  const em=document.getElementById('f-email').value,ph=document.getElementById('f-phone').value;
+  const ad=document.getElementById('f-address').value,ci=document.getElementById('f-city').value;
+  const st=document.getElementById('f-state').value;
+  const pm={transfer:'Bank Transfer',cod:'Pay on Delivery',card:'Debit/Credit Card',ussd:'USSD Banking'}[selectedPayment];
+  const dl=selectedDelivery==='express'?'Express (Same Day) - N5,000':'Standard (2-4 Days) - N2,500';
+  const total=cartSubtotal()+deliveryFee;
+  const items=cart.map(i=>`${i.name} x${i.qty} = N${(i.price*i.qty).toLocaleString()}`).join(' | ');
+  document.getElementById('fs-subject').value=`New Order ${orderId} - ${fn} ${ln}`;
+  document.getElementById('fs-orderid').value=orderId;
+  document.getElementById('fs-name').value=`${fn} ${ln}`;
+  document.getElementById('fs-email').value=em;
+  document.getElementById('fs-phone').value=ph;
+  document.getElementById('fs-address').value=`${ad}, ${ci}`;
+  document.getElementById('fs-state').value=st;
+  document.getElementById('fs-delivery').value=dl;
+  document.getElementById('fs-payment').value=pm;
+  document.getElementById('fs-items').value=items;
+  document.getElementById('fs-total').value='N'+total.toLocaleString();
+  const fd=new FormData(document.getElementById('formspree-form'));
+  fetch('https://formspree.io/f/mojbderr',{method:'POST',body:fd,headers:{'Accept':'application/json'}})
+    .then(()=>showSuccess(orderId,fn,ln,em,ph,`${ad}, ${ci}, ${st}`,pm,total))
+    .catch(()=>showSuccess(orderId,fn,ln,em,ph,`${ad}, ${ci}, ${st}`,pm,total));
+}
+
+function showSuccess(orderId,fn,ln,em,ph,addr,payment,total){
+  document.getElementById('s-orderid').textContent=orderId;
+  document.getElementById('s-name').textContent=fn+' '+ln;
+  document.getElementById('s-email').textContent=em;
+  document.getElementById('s-phone').textContent=ph;
+  document.getElementById('s-address').textContent=addr;
+  document.getElementById('s-payment').textContent=payment;
+  document.getElementById('s-total').textContent='N'+total.toLocaleString();
+  cart=[];updateCartUI();goTo('success');
+}
+
+function showToast(msg){const t=document.getElementById('toast');document.getElementById('toast-msg').textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),3200);}
+
+const da=document.getElementById('proof-drop');
+if(da){
+  da.addEventListener('dragover',e=>{e.preventDefault();da.style.borderColor='var(--orange)';da.style.background='var(--orange-light)';});
+  da.addEventListener('dragleave',()=>{da.style.borderColor='';da.style.background='';});
+  da.addEventListener('drop',e=>{e.preventDefault();da.style.borderColor='';da.style.background='';const f=e.dataTransfer.files[0];if(f){document.getElementById('proof-file').files=e.dataTransfer.files;handleProof({files:[f]});}});
+}
+
+renderProducts();
+updateCartUI();
+</script>
+</body>
+</html>

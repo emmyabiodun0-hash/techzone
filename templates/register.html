@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#FFF4EC;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+form{
+    background:white;
+    padding:35px;
+    border-radius:18px;
+    width:340px;
+    border:1px solid #FFD2B3;
+    box-shadow:0 8px 25px rgba(255,107,0,0.12);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:#FF6B00;
+}
+
+label{
+    font-weight:bold;
+    font-size:14px;
+    color:#333;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    margin-top:6px;
+    border-radius:10px;
+    border:1px solid #FFD2B3;
+    outline:none;
+    background:#FFF8F3;
+    font-size:14px;
+    transition:0.3s;
+    box-sizing:border-box;
+}
+
+input:focus{
+    border-color:#FF6B00;
+    box-shadow:0 0 6px rgba(255,107,0,0.25);
+}
+
+input[type="submit"]{
+    background:#FF6B00;
+    color:white;
+    border:none;
+    cursor:pointer;
+    margin-top:18px;
+    font-weight:bold;
+    font-size:15px;
+}
+
+input[type="submit"]:hover{
+    background:#E65F00;
+}
+
+.error-message{
+    display:block;
+    color:red;
+    font-size:13px;
+    margin-top:4px;
+}
+
+.login-link{
+    text-align:center;
+    margin-top:18px;
+    font-size:14px;
+    color:#666;
+}
+
+.login-link a{
+    color:#FF6B00;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+.login-link a:hover{
+    text-decoration:underline;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+
+    <h2>Register</h2>
+
+    {{ form.hidden_tag() }}
+
+    <label>{{ form.full_name.label }}</label>
+    {{ form.full_name }}
+    {% for error in form.full_name.errors %}
+        <span class="error-message">{{ error }}</span>
+    {% endfor %}
+
+    <br><br>
+
+    <label>{{ form.email.label }}</label>
+    {{ form.email }}
+    {% for error in form.email.errors %}
+        <span class="error-message">{{ error }}</span>
+    {% endfor %}
+
+    <br><br>
+
+    <label>{{ form.password.label }}</label>
+    {{ form.password() }}
+    {% for error in form.password.errors %}
+        <span class="error-message">{{ error }}</span>
+    {% endfor %}
+
+    <br><br>
+
+    <input type="submit" value="Register">
+
+    <div class="login-link">
+        Already have an account?
+        <a href="{{ url_for('login') }}">Login</a>
+    </div>
+
+</form>
+
+{% endblock %}

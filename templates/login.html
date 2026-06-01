@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block style %}
+<style>
+
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f6f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+form{
+    background:white;
+    padding:30px;
+    width:320px;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
+    color:#222;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+label{
+    font-weight:bold;
+    font-size:14px;
+    color:#333;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    outline:none;
+    box-sizing:border-box;
+}
+
+input:focus{
+    border-color:#FF6B00;
+}
+
+.forgot-password{
+    text-align:right;
+    margin-top:8px;
+    margin-bottom:15px;
+}
+
+.forgot-password a{
+    text-decoration:none;
+    color:#FF6B00;
+    font-size:14px;
+    font-weight:bold;
+}
+
+.forgot-password a:hover{
+    text-decoration:underline;
+}
+
+input[type="submit"]{
+    background:#FF6B00;
+    color:white;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+    margin-top:10px;
+    transition:0.3s;
+}
+
+input[type="submit"]:hover{
+    background:#e65f00;
+}
+.flash{
+    width:40%;
+    margin:20px auto;
+    padding:14px;
+    border-radius:10px;
+    font-weight:bold;
+    text-align:center;
+    color:white;
+}
+
+.flash.success{
+    background:#FF6B00;
+}
+
+.flash.error{
+    background:#dc3545;
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+
+    <h2>Login</h2>
+
+    {{ form.csrf_token }}
+
+    <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email() }}
+    </div>
+
+    <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password() }}
+    </div>
+
+    <div class="forgot-password">
+        <a href="{{url_for('forget_password')}}">
+            Forgot Password?
+        </a>
+    </div>
+
+    <input type="submit" value="Login">
+
+</form>
+
+{% endblock %}

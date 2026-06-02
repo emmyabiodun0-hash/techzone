@@ -190,7 +190,7 @@ def login():
 
             login_user(user)
 
-            flash("Login successful", category="success")
+            # flash("Login successful", category="success")
 
             return redirect(url_for('dashboard'))
 
@@ -279,6 +279,8 @@ def verify_otp():
 def dashboard():
     return render_template("dashboard.html")
 
+
+
 @app.route("/forget-password" , methods=['POST', 'GET'])
 def forget_password():
     if request.method == 'POST':
@@ -301,14 +303,33 @@ def forget_password():
             html_text = render_template("email/reset-password.html", username=user.username, otp=token.token)
 
             msg.html = html_text
-            mail.send(msg)
-            session['user_being_verified'] = user.id
-
-            flash("OTP has been sent to your email. Please check your inbox.", "success")
-            return redirect(url_for('forget_password_verify_otp'))    
+            # mail.send(msg)
+        try:
+            brevo_response = send_registration_mail(
+                to=user.email,
+                username=user.username,
+                otp=_new_otp,
+                html_content=html_text
+            )
             
-        else:
-            flash("Email not found","danger")
+            
+            
+        except Exception as e:
+            flash("Account created but there was an error  sending the email", category="danger")
+            print("An error occured while sending")
+            traceback.print_exc()
+            return redirect(url_for('forget_password'))
+
+
+
+
+        session['user_being_verified'] = user.id
+
+        flash(" Forget password otp has been sent to your email. Please check your inbox.", "success")
+        return redirect(url_for('forget_password_verify_otp'))    
+        
+    else:
+        flash("Email not found","danger")
 
     return render_template("forget-password-otp.html")
 

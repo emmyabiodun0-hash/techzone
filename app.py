@@ -281,55 +281,55 @@ def dashboard():
 
 
 
-@app.route("/forget-password" , methods=['POST', 'GET'])
+@app.route("/forget-password", methods=['GET', 'POST'])
 def forget_password():
+
     if request.method == 'POST':
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
-        if user:
-            _new_otp = generate_random_otp(5)
-            token = ResetPasswordToken(
-                token = _new_otp,
-                expires_at = datetime.now() + timedelta(minutes=OTP_LIFESPAN_MINUTES),
-                user = user
-            )
-            db.session.add_all([ token])
-            db.session.commit()
-            msg = Message(
-                subject=f"Verify  reset password : Your OTP is {_new_otp}",
-                body=f"Welcome\nYour password reset OTP is {token.token} ",
-                recipients=[user.email]
-            )
-            html_text = render_template("email/reset-password.html", username=user.username, otp=token.token)
 
-            msg.html = html_text
-            # mail.send(msg)
+        if not user:
+            flash("Email not found", "danger")
+            return redirect(url_for('forget_password'))
+
+        _new_otp = generate_random_otp(5)
+
+        token = ResetPasswordToken(
+            token=_new_otp,
+            expires_at=datetime.now() + timedelta(minutes=OTP_LIFESPAN_MINUTES),
+            user=user
+        )
+
+        db.session.add(token)
+        db.session.commit()
+
+        html_text = render_template(
+            "email/reset-password.html",
+            username=user.username,
+            otp=_new_otp
+        )
+
         try:
-            brevo_response = send_registration_mail(
+            send_registration_mail(
                 to=user.email,
                 username=user.username,
                 otp=_new_otp,
                 html_content=html_text
             )
-            
-            
-            
-        except Exception as e:
-            flash("Account created but there was an error  sending the email", category="danger")
-            print("An error occured while sending")
+
+        except Exception:
+            flash("There was an error sending the email.", "danger")
             traceback.print_exc()
             return redirect(url_for('forget_password'))
 
-
-
-
         session['user_being_verified'] = user.id
 
-        flash(" Forget password otp has been sent to your email. Please check your inbox.", "success")
-        return redirect(url_for('forget_password_verify_otp'))    
-        
-    else:
-        flash("Email not found","danger")
+        flash(
+            "Password reset OTP has been sent to your email. Please check your inbox.",
+            "success"
+        )
+
+        return redirect(url_for('forget_password_verify_otp'))
 
     return render_template("forget-password-otp.html")
 

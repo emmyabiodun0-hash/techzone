@@ -112,8 +112,7 @@ def register():
                 otp=_new_otp,
                 html_content=html_text
             )
-            print("Status Code:", response.status_code)
-            print("Response:", response.text)
+            
             
         except Exception as e:
             flash("Account created but there was an error  sending the email", category="danger")

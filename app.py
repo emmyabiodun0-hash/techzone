@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 import os
+import traceback
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 import secrets
@@ -12,7 +13,7 @@ from form import LoginForm
 from forms import Logins
 from model import ResetPasswordToken, User, OTPToken, db
 from werkzeug.security import check_password_hash, generate_password_hash
-from utils import generate_random_otp
+from utils import generate_random_otp, send_registration_mail
 from flask_mail import Mail, Message
 
 
@@ -101,7 +102,20 @@ def register():
         html_text = render_template("email/verify-email.html", username=user.username, otp=token.token)
 
         msg.html = html_text
-        mail.send(msg)
+        # mail.send(msg)
+        try:
+            brevo_response = send_registration_mail(
+                to=user.email,
+                username=user.username,
+                otp=_new_otp,
+                html_content=html_text
+            )
+            
+        except Exception as e:
+            flash("Account created but there was an error  sending the email", category="danger")
+            print("An error occured while sending")
+            traceback.print_exc()
+            return redirect(url_for('register'))
 
     
         session['user_being_verified'] = user.id

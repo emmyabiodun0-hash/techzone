@@ -6,28 +6,52 @@
 body{
     background:#f4f6f9;
     font-family:Arial, sans-serif;
+    margin:0;
+    padding:20px;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
 }
 
+/* Form card */
 form{
     display:flex;
     flex-direction:column;
     gap:15px;
-    width:40%;
-    margin-inline:auto;
-    margin-top:100px;
+    width:100%;
+    max-width:420px;
     padding:35px;
     background:#ffffff;
     border-radius:16px;
     border:2px solid #FF6B00;
     box-shadow:0 4px 15px rgba(255,107,0,0.15);
+    box-sizing:border-box;
 }
 
+/* Title */
 h2{
     text-align:center;
     color:#FF6B00;
     margin-bottom:10px;
 }
 
+/* Info text */
+.info{
+    text-align:center;
+    color:#666;
+    font-size:14px;
+}
+
+/* Expiry text */
+.expire{
+    text-align:center;
+    color:#FF6B00;
+    font-size:14px;
+    font-weight:bold;
+}
+
+/* Input */
 .form-control{
     padding:14px;
     border:2px solid #FF6B00;
@@ -35,12 +59,17 @@ h2{
     outline:none;
     font-size:16px;
     transition:0.3s;
+    width:100%;
+    box-sizing:border-box;
+    text-align:center;
+    letter-spacing:2px;
 }
 
 .form-control:focus{
     box-shadow:0 0 8px rgba(255,107,0,0.4);
 }
 
+/* Button */
 input[type="submit"]{
     padding:14px;
     background:#FF6B00;
@@ -57,17 +86,26 @@ input[type="submit"]:hover{
     background:#e65f00;
 }
 
-.info{
-    text-align:center;
-    color:#666;
-    font-size:14px;
-}
+/* 🔥 Mobile responsiveness */
+@media (max-width: 480px){
+    form{
+        padding:22px;
+        border-radius:14px;
+    }
 
-.expire{
-    text-align:center;
-    color:#FF6B00;
-    font-size:14px;
-    font-weight:bold;
+    h2{
+        font-size:20px;
+    }
+
+    .form-control{
+        font-size:14px;
+        padding:12px;
+    }
+
+    input[type="submit"]{
+        font-size:14px;
+        padding:12px;
+    }
 }
 
 </style>

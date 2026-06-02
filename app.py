@@ -114,6 +114,7 @@ def register():
             )
             
             
+            
         except Exception as e:
             flash("Account created but there was an error  sending the email", category="danger")
             print("An error occured while sending")

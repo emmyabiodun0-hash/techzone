@@ -9,33 +9,43 @@ body{
     display:flex;
     justify-content:center;
     align-items:center;
-    height:100vh;
+    min-height:100vh;
+    margin:0;
+    padding:20px;
 }
 
+/* Card */
 form{
     background:white;
     padding:30px;
-    width:320px;
+    width:100%;
+    max-width:360px;
     border-radius:12px;
     box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    box-sizing:border-box;
 }
 
+/* Title */
 h2{
     text-align:center;
     margin-bottom:20px;
     color:#222;
 }
 
+/* Form groups */
 .form-group{
     margin-bottom:15px;
 }
 
+/* Labels */
 label{
     font-weight:bold;
     font-size:14px;
     color:#333;
+    display:block;
 }
 
+/* Inputs */
 input{
     width:100%;
     padding:10px;
@@ -44,12 +54,16 @@ input{
     border-radius:6px;
     outline:none;
     box-sizing:border-box;
+    font-size:14px;
+    transition:0.3s;
 }
 
 input:focus{
     border-color:#FF6B00;
+    box-shadow:0 0 4px rgba(255,107,0,0.25);
 }
 
+/* Forgot password */
 .forgot-password{
     text-align:right;
     margin-top:8px;
@@ -67,6 +81,7 @@ input:focus{
     text-decoration:underline;
 }
 
+/* Submit button */
 input[type="submit"]{
     background:#FF6B00;
     color:white;
@@ -75,16 +90,20 @@ input[type="submit"]{
     font-weight:bold;
     margin-top:10px;
     transition:0.3s;
+    padding:10px;
+    font-size:15px;
 }
 
 input[type="submit"]:hover{
     background:#e65f00;
 }
+
+/* Flash messages */
 .flash{
-    width:40%;
-    margin:20px auto;
-    padding:14px;
-    border-radius:10px;
+    width:100%;
+    margin:10px auto;
+    padding:12px;
+    border-radius:8px;
     font-weight:bold;
     text-align:center;
     color:white;
@@ -96,6 +115,27 @@ input[type="submit"]:hover{
 
 .flash.error{
     background:#dc3545;
+}
+
+/* 🔥 Mobile responsiveness */
+@media (max-width: 480px){
+    form{
+        padding:22px;
+        border-radius:10px;
+    }
+
+    h2{
+        font-size:20px;
+    }
+
+    input{
+        font-size:14px;
+        padding:9px;
+    }
+
+    input[type="submit"]{
+        font-size:14px;
+    }
 }
 
 </style>
@@ -120,7 +160,7 @@ input[type="submit"]:hover{
     </div>
 
     <div class="forgot-password">
-        <a href="{{url_for('forget_password')}}">
+        <a href="{{ url_for('forget_password') }}">
             Forgot Password?
         </a>
     </div>

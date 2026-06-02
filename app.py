@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import os
 import traceback
+from urllib import response
 from flask import Flask, abort, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
 import secrets
@@ -103,6 +104,7 @@ def register():
 
         msg.html = html_text
         # mail.send(msg)
+        
         try:
             brevo_response = send_registration_mail(
                 to=user.email,
@@ -110,6 +112,8 @@ def register():
                 otp=_new_otp,
                 html_content=html_text
             )
+            print("Status Code:", response.status_code)
+            print("Response:", response.text)
             
         except Exception as e:
             flash("Account created but there was an error  sending the email", category="danger")

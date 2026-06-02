@@ -996,7 +996,7 @@ function placeOrder(){
   document.getElementById('fs-items').value=items;
   document.getElementById('fs-total').value='N'+total.toLocaleString();
   const fd=new FormData(document.getElementById('formspree-form'));
-  fetch('https://formspree.io/f/mojbderr',{method:'POST',body:fd,headers:{'Accept':'application/json'}})
+  fetch('https://formspree.io/f/xzdwnwyl',{method:'POST',body:fd,headers:{'Accept':'application/json'}})
     .then(()=>showSuccess(orderId,fn,ln,em,ph,`${ad}, ${ci}, ${st}`,pm,total))
     .catch(()=>showSuccess(orderId,fn,ln,em,ph,`${ad}, ${ci}, ${st}`,pm,total));
 }

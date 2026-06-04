@@ -22,7 +22,7 @@ def send_registration_mail(
     ):
     payload = {  
             "sender":{  
-                "name":"Flask App",
+                "name":"Techzone",
                 "email":"gemmy1866@gmail.com"
             },
             "to":[  
